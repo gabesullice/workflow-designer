@@ -1,0 +1,14 @@
+.validation-error {
+  color: red;
+}
+
+.state-item {
+  cursor: move;
+  padding: 8px;
+  margin: 4px 0;
+  border: 1px solid #ccc;
+}
+
+.state-item.dragging {
+  background-color: #f0f0f0;
+}
