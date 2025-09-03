@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 import './WorkflowTransitions.css';
 import { validateMachineName, generateMachineNameFromLabel } from '../../utils/machine-name.js';
+import DraggableItemList from '../shared/DraggableItemList.jsx';
+
+function TransitionItem({ transition, getStateLabel, onRemove }) {
+  return (
+    <div className="transition-item-content">
+      <strong>{transition.label}</strong> (ID: {transition.id})
+      <div className="transition-flow">
+        {transition.fromStates.map(stateId => getStateLabel(stateId)).join(', ')} 
+        → {getStateLabel(transition.toState)}
+      </div>
+      <button onClick={() => onRemove(transition.id)}>Remove</button>
+    </div>
+  );
+}
 
 function WorkflowTransitions({ initialTransitions = [], allowedStates = [] }) {
   console.assert(allowedStates.length > 0 || initialTransitions.length === 0, 'allowedStates prop must not be empty when transitions are provided');
@@ -10,7 +24,6 @@ function WorkflowTransitions({ initialTransitions = [], allowedStates = [] }) {
   const [selectedFromStates, setSelectedFromStates] = useState([]);
   const [selectedToState, setSelectedToState] = useState('');
   const [validationError, setValidationError] = useState('');
-  const [draggedIndex, setDraggedIndex] = useState(null);
 
   const availableStates = allowedStates;
 
@@ -66,34 +79,11 @@ function WorkflowTransitions({ initialTransitions = [], allowedStates = [] }) {
     setSelectedFromStates(selectedOptions);
   };
 
-  const handleDragStart = (e, index) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = (e, dropIndex) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === dropIndex) return;
-
-    const newTransitions = [...transitions];
-    const draggedItem = newTransitions[draggedIndex];
-    
-    newTransitions.splice(draggedIndex, 1);
-    newTransitions.splice(dropIndex, 0, draggedItem);
-    
-    setTransitions(newTransitions);
-    setDraggedIndex(null);
-  };
-
   const getStateLabel = (stateId) => {
     const state = availableStates.find(s => s.id === stateId);
     return state ? state.label : stateId;
   };
+
 
   return (
     <div>
@@ -139,25 +129,18 @@ function WorkflowTransitions({ initialTransitions = [], allowedStates = [] }) {
         <button type="submit">Add Transition</button>
         {validationError && <div className="validation-error">{validationError}</div>}
       </form>
-      <ul>
-        {transitions.map((transition, index) => (
-          <li 
-            key={transition.id}
-            draggable
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, index)}
-            className={`transition-item ${draggedIndex === index ? 'dragging' : ''}`}
-          >
-            <strong>{transition.label}</strong> (ID: {transition.id})
-            <div className="transition-flow">
-              {transition.fromStates.map(stateId => getStateLabel(stateId)).join(', ')} 
-              → {getStateLabel(transition.toState)}
-            </div>
-            <button onClick={() => removeTransition(transition.id)}>Remove</button>
-          </li>
-        ))}
-      </ul>
+      <DraggableItemList
+        items={transitions}
+        setItems={setTransitions}
+        renderItem={(transition) => (
+          <TransitionItem 
+            transition={transition}
+            getStateLabel={getStateLabel}
+            onRemove={removeTransition}
+          />
+        )}
+        itemClassName="transition-item"
+      />
     </div>
   );
 }

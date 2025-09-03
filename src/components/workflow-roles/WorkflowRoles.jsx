@@ -1,13 +1,39 @@
 import React, { useState } from 'react';
 import './WorkflowRoles.css';
 import { validateMachineName, generateMachineNameFromLabel } from '../../utils/machine-name.js';
+import DraggableItemList from '../shared/DraggableItemList.jsx';
+
+function RoleItem({ role, availableTransitions, onRemove, onTogglePermission }) {
+  return (
+    <div className="role-item-content">
+      <div className="role-header">
+        <strong>{role.label}</strong> (ID: {role.id})
+        <button onClick={() => onRemove(role.id)}>Remove</button>
+      </div>
+      {availableTransitions.length > 0 && (
+        <div className="role-permissions">
+          <h4>Allowed Transitions:</h4>
+          {availableTransitions.map(transition => (
+            <label key={transition.id} className="permission-checkbox">
+              <input
+                type="checkbox"
+                checked={role.permissions.includes(transition.id)}
+                onChange={() => onTogglePermission(role.id, transition.id)}
+              />
+              {transition.label}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function WorkflowRoles({ initialRoles = [], availableTransitions = [] }) {
   console.assert(availableTransitions.length > 0 || initialRoles.length === 0, 'availableTransitions prop must not be empty when roles are provided');
   const [roles, setRoles] = useState(initialRoles);
   const [newRoleLabel, setNewRoleLabel] = useState('');
   const [validationError, setValidationError] = useState('');
-  const [draggedIndex, setDraggedIndex] = useState(null);
 
 
   const addRole = (e) => {
@@ -49,29 +75,6 @@ function WorkflowRoles({ initialRoles = [], availableTransitions = [] }) {
     }));
   };
 
-  const handleDragStart = (e, index) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = (e, dropIndex) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === dropIndex) return;
-
-    const newRoles = [...roles];
-    const draggedItem = newRoles[draggedIndex];
-    
-    newRoles.splice(draggedIndex, 1);
-    newRoles.splice(dropIndex, 0, draggedItem);
-    
-    setRoles(newRoles);
-    setDraggedIndex(null);
-  };
 
   return (
     <div>
@@ -86,38 +89,19 @@ function WorkflowRoles({ initialRoles = [], availableTransitions = [] }) {
         <button type="submit">Add Role</button>
         {validationError && <div className="validation-error">{validationError}</div>}
       </form>
-      <ul>
-        {roles.map((role, index) => (
-          <li 
-            key={role.id}
-            draggable
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, index)}
-            className={`role-item ${draggedIndex === index ? 'dragging' : ''}`}
-          >
-            <div className="role-header">
-              <strong>{role.label}</strong> (ID: {role.id})
-              <button onClick={() => removeRole(role.id)}>Remove</button>
-            </div>
-            {availableTransitions.length > 0 && (
-              <div className="role-permissions">
-                <h4>Allowed Transitions:</h4>
-                {availableTransitions.map(transition => (
-                  <label key={transition.id} className="permission-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={role.permissions.includes(transition.id)}
-                      onChange={() => togglePermission(role.id, transition.id)}
-                    />
-                    {transition.label}
-                  </label>
-                ))}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      <DraggableItemList
+        items={roles}
+        setItems={setRoles}
+        renderItem={(role) => (
+          <RoleItem 
+            role={role} 
+            availableTransitions={availableTransitions}
+            onRemove={removeRole}
+            onTogglePermission={togglePermission}
+          />
+        )}
+        itemClassName="role-item"
+      />
     </div>
   );
 }

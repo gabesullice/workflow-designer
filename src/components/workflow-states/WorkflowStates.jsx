@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import './WorkflowStates.css';
 import { validateMachineName, generateMachineNameFromLabel } from '../../utils/machine-name.js';
+import DraggableItemList from '../shared/DraggableItemList.jsx';
+
+function StateItem({ state, onRemove }) {
+  return (
+    <div className="state-item-content">
+      <strong>{state.label}</strong> (ID: {state.id})
+      <button onClick={() => onRemove(state.id)}>Remove</button>
+    </div>
+  );
+}
 
 function WorkflowStates({ initialStates = [] }) {
   const [states, setStates] = useState(initialStates);
   const [newStateLabel, setNewStateLabel] = useState('');
   const [validationError, setValidationError] = useState('');
-  const [draggedIndex, setDraggedIndex] = useState(null);
 
 
   const addState = (e) => {
@@ -35,29 +44,6 @@ function WorkflowStates({ initialStates = [] }) {
     setStates(states.filter(state => state.id !== stateId));
   };
 
-  const handleDragStart = (e, index) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = (e, dropIndex) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === dropIndex) return;
-
-    const newStates = [...states];
-    const draggedItem = newStates[draggedIndex];
-    
-    newStates.splice(draggedIndex, 1);
-    newStates.splice(dropIndex, 0, draggedItem);
-    
-    setStates(newStates);
-    setDraggedIndex(null);
-  };
 
   return (
     <div>
@@ -72,21 +58,12 @@ function WorkflowStates({ initialStates = [] }) {
         <button type="submit">Add State</button>
         {validationError && <div className="validation-error">{validationError}</div>}
       </form>
-      <ul>
-        {states.map((state, index) => (
-          <li 
-            key={state.id}
-            draggable
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, index)}
-            className={`state-item ${draggedIndex === index ? 'dragging' : ''}`}
-          >
-            <strong>{state.label}</strong> (ID: {state.id})
-            <button onClick={() => removeState(state.id)}>Remove</button>
-          </li>
-        ))}
-      </ul>
+      <DraggableItemList
+        items={states}
+        setItems={setStates}
+        renderItem={(state) => <StateItem state={state} onRemove={removeState} />}
+        itemClassName="state-item"
+      />
     </div>
   );
 }
