@@ -2,9 +2,9 @@ import React from 'react';
 import WorkflowStates from '../workflow-states/WorkflowStates.jsx';
 import WorkflowTransitions from '../workflow-transitions/WorkflowTransitions.jsx';
 import WorkflowRoles from '../workflow-roles/WorkflowRoles.jsx';
-import { WorkflowProvider, useWorkflowContext } from '../../context/WorkflowContext.jsx';
+import { useWorkflowContext } from '../../context/WorkflowContext.jsx';
 
-function WorkflowEditorContent() {
+function WorkflowEditor() {
   const { workflow } = useWorkflowContext();
 
   return (
@@ -23,14 +23,6 @@ function WorkflowEditorContent() {
         availableTransitions={workflow.transitions} 
       />
     </div>
-  );
-}
-
-function WorkflowEditor({ initialWorkflow = { states: [], transitions: [], roles: [] } }) {
-  return (
-    <WorkflowProvider initialWorkflow={initialWorkflow}>
-      <WorkflowEditorContent />
-    </WorkflowProvider>
   );
 }
 

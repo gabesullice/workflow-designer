@@ -1,0 +1,15 @@
+{
+  "states": [
+    { "id": "draft", "label": "Draft" },
+    { "id": "review", "label": "In Review" },
+    { "id": "published", "label": "Published" }
+  ],
+  "transitions": [
+    {
+      "id": "publish",
+      "label": "Publish",
+      "fromStates": ["draft", "review"],
+      "toState": "published"
+    }
+  ]
+}

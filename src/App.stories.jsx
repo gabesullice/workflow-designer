@@ -1,25 +1,15 @@
-import WorkflowEditor from './WorkflowEditor';
-import { WorkflowProvider } from '../../context/WorkflowContext.jsx';
+import App from './App';
 
 export default {
-  title: 'Components/WorkflowEditor',
-  component: WorkflowEditor,
-  decorators: [
-    (Story, { args }) => (
-      <WorkflowProvider initialWorkflow={args.initialWorkflow}>
-        <Story />
-      </WorkflowProvider>
-    ),
-  ],
-};
-
-export const Empty = {
-  args: {
-    initialWorkflow: { states: [], transitions: [], roles: [] }
-  }
+  title: 'App',
+  component: App,
 };
 
 export const Default = {
+  args: {}
+};
+
+export const WithSampleWorkflow = {
   args: {
     initialWorkflow: {
       states: [

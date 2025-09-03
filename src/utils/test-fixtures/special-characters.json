@@ -1,0 +1,14 @@
+{
+  "states": [
+    { "id": "draft", "label": "Draft" },
+    { "id": "in_review", "label": "In Review" }
+  ],
+  "transitions": [
+    {
+      "id": "submit_for_review",
+      "label": "Submit for review: \"Ready!\"",
+      "fromStates": ["draft"],
+      "toState": "in_review"
+    }
+  ]
+}

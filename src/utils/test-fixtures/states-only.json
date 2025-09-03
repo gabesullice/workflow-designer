@@ -1,0 +1,7 @@
+{
+  "states": [
+    { "id": "draft", "label": "Draft" },
+    { "id": "review", "label": "In Review" }
+  ],
+  "transitions": []
+}
