@@ -1,0 +1,30 @@
+{
+  "name": "workflow-designer",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@ark-ui/react": "^5.22.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@storybook/addon-links": "^9.1.4",
+    "@storybook/react-vite": "^9.1.4",
+    "@tailwindcss/postcss": "^4.1.12",
+    "@vitejs/plugin-react": "^5.0.2",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "vite": "^7.1.4",
+    "vitest": "^3.2.4"
+  }
+}
