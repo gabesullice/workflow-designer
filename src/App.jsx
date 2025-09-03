@@ -1,13 +1,16 @@
 import React from 'react';
 import { WorkflowProvider } from './context/WorkflowContext.jsx';
 import WorkflowEditor from './components/workflow-editor/WorkflowEditor.jsx';
+import RoleFilter from './components/role-filter/RoleFilter.jsx';
 import { DiagramVisualizer } from './components/diagram-visualizer/DiagramVisualizer.jsx';
 import { generateWorkflowDiagram } from './utils/diagram-generator.js';
+import { filterWorkflowByRoles } from './utils/workflow-filter.js';
 import { useWorkflowContext } from './context/WorkflowContext.jsx';
 
 function DiagramVisualizerContainer() {
-  const { workflow } = useWorkflowContext();
-  const diagramDefinition = generateWorkflowDiagram(workflow);
+  const { workflow, selectedRoleIds } = useWorkflowContext();
+  const filteredWorkflow = filterWorkflowByRoles(workflow, selectedRoleIds);
+  const diagramDefinition = generateWorkflowDiagram(filteredWorkflow);
   
   return <DiagramVisualizer diagramDefinition={diagramDefinition} />;
 }
@@ -20,6 +23,7 @@ function App({ initialWorkflow }) {
         <div>
           <div>
             <DiagramVisualizerContainer />
+            <RoleFilter />
           </div>
           <div>
             <WorkflowEditor />

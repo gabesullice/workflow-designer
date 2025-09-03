@@ -4,6 +4,7 @@ const WorkflowContext = createContext();
 
 export function WorkflowProvider({ children, initialWorkflow = { states: [], transitions: [], roles: [] } }) {
   const [workflow, setWorkflow] = useState(initialWorkflow);
+  const [selectedRoleIds, setSelectedRoleIds] = useState([]);
 
   const updateStates = (newStates) => {
     setWorkflow(prev => ({ ...prev, states: newStates }));
@@ -17,11 +18,17 @@ export function WorkflowProvider({ children, initialWorkflow = { states: [], tra
     setWorkflow(prev => ({ ...prev, roles: newRoles }));
   };
 
+  const updateSelectedRoleIds = (roleIds) => {
+    setSelectedRoleIds(roleIds);
+  };
+
   const value = {
     workflow,
+    selectedRoleIds,
     updateStates,
     updateTransitions,
-    updateRoles
+    updateRoles,
+    updateSelectedRoleIds
   };
 
   return (
