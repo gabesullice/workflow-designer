@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './WorkflowStates.css';
-import { validateMachineName, generateMachineNameFromLabel } from '../../utils/machine-name.js';
+import { useWorkflowStates } from '../../hooks/useWorkflowStates.js';
+import { useWorkflowContext } from '../../context/WorkflowContext.jsx';
 import DraggableItemList from '../shared/DraggableItemList.jsx';
 
 function StateItem({ state, onRemove }) {
@@ -12,43 +13,23 @@ function StateItem({ state, onRemove }) {
   );
 }
 
-function WorkflowStates({ initialStates = [] }) {
-  const [states, setStates] = useState(initialStates);
+function WorkflowStates() {
+  const { states, addState, removeState, validationError, setValidationError } = useWorkflowStates();
+  const { updateStates } = useWorkflowContext();
   const [newStateLabel, setNewStateLabel] = useState('');
-  const [validationError, setValidationError] = useState('');
 
 
-  const addState = (e) => {
+  const handleAddState = (e) => {
     e.preventDefault();
-    if (!newStateLabel.trim()) return;
-    
-    const id = generateMachineNameFromLabel(newStateLabel);
-    
-    if (!validateMachineName(id)) {
-      setValidationError('ID must contain only lowercase letters and underscores');
-      return;
+    if (addState(newStateLabel)) {
+      setNewStateLabel('');
     }
-    
-    if (states.some(state => state.id === id)) {
-      setValidationError('ID must be unique');
-      return;
-    }
-    
-    setValidationError('');
-    const newState = { id, label: newStateLabel.trim() };
-    setStates([...states, newState]);
-    setNewStateLabel('');
   };
-
-  const removeState = (stateId) => {
-    setStates(states.filter(state => state.id !== stateId));
-  };
-
 
   return (
     <div>
       <h2>Workflow States</h2>
-      <form onSubmit={addState}>
+      <form onSubmit={handleAddState}>
         <input
           type="text"
           value={newStateLabel}
@@ -60,7 +41,7 @@ function WorkflowStates({ initialStates = [] }) {
       </form>
       <DraggableItemList
         items={states}
-        setItems={setStates}
+        setItems={updateStates}
         renderItem={(state) => <StateItem state={state} onRemove={removeState} />}
         itemClassName="state-item"
       />
