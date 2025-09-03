@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './WorkflowStates.css';
+import { validateMachineName, generateMachineNameFromLabel } from '../../utils/machine-name.js';
 
 function WorkflowStates({ initialStates = [] }) {
   const [states, setStates] = useState(initialStates);
@@ -7,18 +8,14 @@ function WorkflowStates({ initialStates = [] }) {
   const [validationError, setValidationError] = useState('');
   const [draggedIndex, setDraggedIndex] = useState(null);
 
-  const validateId = (id) => {
-    const validIdPattern = /^[a-z_]+$/;
-    return validIdPattern.test(id);
-  };
 
   const addState = (e) => {
     e.preventDefault();
     if (!newStateLabel.trim()) return;
     
-    const id = newStateLabel.toLowerCase().replace(/\s+/g, '_');
+    const id = generateMachineNameFromLabel(newStateLabel);
     
-    if (!validateId(id)) {
+    if (!validateMachineName(id)) {
       setValidationError('ID must contain only lowercase letters and underscores');
       return;
     }

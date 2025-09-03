@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './WorkflowTransitions.css';
+import { validateMachineName, generateMachineNameFromLabel } from '../../utils/machine-name.js';
 
 function WorkflowTransitions({ initialTransitions = [], allowedStates = [] }) {
   console.assert(allowedStates.length > 0 || initialTransitions.length === 0, 'allowedStates prop must not be empty when transitions are provided');
@@ -13,10 +14,6 @@ function WorkflowTransitions({ initialTransitions = [], allowedStates = [] }) {
 
   const availableStates = allowedStates;
 
-  const validateId = (id) => {
-    const validIdPattern = /^[a-z_]+$/;
-    return validIdPattern.test(id);
-  };
 
   const addTransition = (e) => {
     e.preventDefault();
@@ -35,9 +32,9 @@ function WorkflowTransitions({ initialTransitions = [], allowedStates = [] }) {
       return;
     }
     
-    const id = newTransitionLabel.toLowerCase().replace(/\s+/g, '_');
+    const id = generateMachineNameFromLabel(newTransitionLabel);
     
-    if (!validateId(id)) {
+    if (!validateMachineName(id)) {
       setValidationError('ID must contain only lowercase letters and underscores');
       return;
     }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './WorkflowRoles.css';
+import { validateMachineName, generateMachineNameFromLabel } from '../../utils/machine-name.js';
 
 function WorkflowRoles({ initialRoles = [], availableTransitions = [] }) {
   console.assert(availableTransitions.length > 0 || initialRoles.length === 0, 'availableTransitions prop must not be empty when roles are provided');
@@ -8,18 +9,14 @@ function WorkflowRoles({ initialRoles = [], availableTransitions = [] }) {
   const [validationError, setValidationError] = useState('');
   const [draggedIndex, setDraggedIndex] = useState(null);
 
-  const validateId = (id) => {
-    const validIdPattern = /^[a-z_]+$/;
-    return validIdPattern.test(id);
-  };
 
   const addRole = (e) => {
     e.preventDefault();
     if (!newRoleLabel.trim()) return;
     
-    const id = newRoleLabel.toLowerCase().replace(/\s+/g, '_');
+    const id = generateMachineNameFromLabel(newRoleLabel);
     
-    if (!validateId(id)) {
+    if (!validateMachineName(id)) {
       setValidationError('ID must contain only lowercase letters and underscores');
       return;
     }
