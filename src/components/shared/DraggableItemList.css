@@ -1,0 +1,72 @@
+.draggable-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.draggable-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin: 4px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: move;
+}
+
+.draggable-item.dragging {
+  background-color: #f0f0f0;
+}
+
+.drag-handle {
+  cursor: grab;
+  padding: 4px 8px;
+  margin-right: 8px;
+  color: #666;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  max-height: 24px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.item-content {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-button {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #f0f0f0;
+}
+
+.item-id {
+  font-family: 'Courier New', Consolas, monospace;
+  color: #999;
+  font-size: 0.9em;
+  opacity: 0;
+  transition: opacity 0.2s;
+  margin-left: 8px;
+}
+
+.draggable-item:hover .item-id,
+.draggable-item:focus .item-id {
+  opacity: 1;
+}

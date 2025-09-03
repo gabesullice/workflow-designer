@@ -4,15 +4,15 @@ import DraggableItemList from '../shared/DraggableItemList.jsx';
 import ConfirmationModal from '../shared/ConfirmationModal.jsx';
 import { useWorkflowTransitions } from '../../hooks/useWorkflowTransitions.js';
 
-function TransitionItem({ transition, getStateLabel, onRemove }) {
+function TransitionItem({ transition, getStateLabel }) {
   return (
     <div className="transition-item-content">
-      <strong>{transition.label}</strong> (ID: {transition.id})
+      <strong>{transition.label}</strong>
+      <span className="item-id">{transition.id}</span>
       <div className="transition-flow">
         {transition.fromStates.map(stateId => getStateLabel(stateId)).join(', ')} 
         → {getStateLabel(transition.toState)}
       </div>
-      <button onClick={() => onRemove(transition.id)}>Remove</button>
     </div>
   );
 }
@@ -97,7 +97,7 @@ function WorkflowTransitions() {
 
   return (
     <div>
-      <h2>Workflow Transitions</h2>
+      <h2>Transitions</h2>
       <form onSubmit={handleAddTransition}>
         <div>
           <input
@@ -146,10 +146,10 @@ function WorkflowTransitions() {
           <TransitionItem 
             transition={transition}
             getStateLabel={getStateLabel}
-            onRemove={handleRemoveTransition}
           />
         )}
         itemClassName="transition-item"
+        onDelete={(transition) => handleRemoveTransition(transition.id)}
       />
       <ConfirmationModal
         isOpen={confirmationModal.isOpen}

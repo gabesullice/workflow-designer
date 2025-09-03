@@ -3,11 +3,11 @@ import './WorkflowStates.css';
 import { useWorkflowStates } from '../../hooks/useWorkflowStates.js';
 import DraggableItemList from '../shared/DraggableItemList.jsx';
 
-function StateItem({ state, onRemove }) {
+function StateItem({ state }) {
   return (
     <div className="state-item-content">
-      <strong>{state.label}</strong> (ID: {state.id})
-      <button onClick={() => onRemove(state.id)}>Remove</button>
+      <strong>{state.label}</strong>
+      <span className="item-id">{state.id}</span>
     </div>
   );
 }
@@ -26,8 +26,15 @@ function WorkflowStates() {
 
   return (
     <div>
-      <h2>Workflow States</h2>
-      <form onSubmit={handleAddState}>
+      <h2>States</h2>
+      <DraggableItemList
+        items={states}
+        setItems={updateStates}
+        renderItem={(state) => <StateItem state={state} />}
+        itemClassName="state-item"
+        onDelete={(state) => removeState(state.id)}
+      />
+      <form onSubmit={handleAddState} className="add-state-form">
         <input
           type="text"
           value={newStateLabel}
@@ -37,12 +44,6 @@ function WorkflowStates() {
         <button type="submit">Add State</button>
         {validationError && <div className="validation-error">{validationError}</div>}
       </form>
-      <DraggableItemList
-        items={states}
-        setItems={updateStates}
-        renderItem={(state) => <StateItem state={state} onRemove={removeState} />}
-        itemClassName="state-item"
-      />
     </div>
   );
 }
