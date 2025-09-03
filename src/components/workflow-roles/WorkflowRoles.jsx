@@ -59,16 +59,6 @@ function WorkflowRoles() {
   return (
     <div>
       <h2>Roles</h2>
-      <form onSubmit={handleAddRole}>
-        <input
-          type="text"
-          value={newRoleLabel}
-          onChange={(e) => setNewRoleLabel(e.target.value)}
-          placeholder="Enter role label"
-        />
-        <button type="submit">Add Role</button>
-        {validationError && <div className="validation-error">{validationError}</div>}
-      </form>
       <DraggableItemList
         items={roles}
         setItems={updateRoles}
@@ -82,6 +72,16 @@ function WorkflowRoles() {
         itemClassName="role-item"
         onDelete={(role) => removeRole(role.id)}
       />
+      <form onSubmit={handleAddRole} className="add-role-form">
+        <input
+          type="text"
+          value={newRoleLabel}
+          onChange={(e) => setNewRoleLabel(e.target.value)}
+          placeholder="Enter role label"
+        />
+        <button type="submit">Add Role</button>
+        {validationError && <div className="validation-error">{validationError}</div>}
+      </form>
     </div>
   );
 }

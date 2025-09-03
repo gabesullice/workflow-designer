@@ -98,8 +98,20 @@ function WorkflowTransitions() {
   return (
     <div>
       <h2>Transitions</h2>
-      <form onSubmit={handleAddTransition}>
-        <div>
+      <DraggableItemList
+        items={transitions}
+        setItems={updateTransitions}
+        renderItem={(transition) => (
+          <TransitionItem 
+            transition={transition}
+            getStateLabel={getStateLabel}
+          />
+        )}
+        itemClassName="transition-item"
+        onDelete={(transition) => handleRemoveTransition(transition.id)}
+      />
+      <form onSubmit={handleAddTransition} className="add-transition-form">
+        <div className="form-field">
           <input
             type="text"
             value={newTransitionLabel}
@@ -107,7 +119,7 @@ function WorkflowTransitions() {
             placeholder="Enter transition label"
           />
         </div>
-        <div>
+        <div className="form-field">
           <label>From States (hold Ctrl/Cmd to select multiple):</label>
           <select
             multiple
@@ -122,7 +134,7 @@ function WorkflowTransitions() {
             ))}
           </select>
         </div>
-        <div>
+        <div className="form-field">
           <label>To State:</label>
           <select
             value={selectedToState}
@@ -139,18 +151,6 @@ function WorkflowTransitions() {
         <button type="submit">Add Transition</button>
         {validationError && <div className="validation-error">{validationError}</div>}
       </form>
-      <DraggableItemList
-        items={transitions}
-        setItems={updateTransitions}
-        renderItem={(transition) => (
-          <TransitionItem 
-            transition={transition}
-            getStateLabel={getStateLabel}
-          />
-        )}
-        itemClassName="transition-item"
-        onDelete={(transition) => handleRemoveTransition(transition.id)}
-      />
       <ConfirmationModal
         isOpen={confirmationModal.isOpen}
         onConfirm={handleConfirmRemoval}
