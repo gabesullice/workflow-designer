@@ -12,3 +12,25 @@
 .role-item.dragging {
   background-color: #f0f0f0;
 }
+
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.role-permissions h4 {
+  margin: 8px 0 4px 0;
+  font-size: 0.9em;
+}
+
+.permission-checkbox {
+  display: block;
+  margin: 4px 0;
+  font-size: 0.9em;
+}
+
+.permission-checkbox input {
+  margin-right: 8px;
+}

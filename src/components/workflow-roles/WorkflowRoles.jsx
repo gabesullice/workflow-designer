@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './WorkflowRoles.css';
 
-function WorkflowRoles({ initialRoles = [] }) {
+function WorkflowRoles({ initialRoles = [], availableTransitions = [] }) {
+  console.assert(availableTransitions.length > 0 || initialRoles.length === 0, 'availableTransitions prop must not be empty when roles are provided');
   const [roles, setRoles] = useState(initialRoles);
   const [newRoleLabel, setNewRoleLabel] = useState('');
   const [validationError, setValidationError] = useState('');
@@ -29,13 +30,26 @@ function WorkflowRoles({ initialRoles = [] }) {
     }
     
     setValidationError('');
-    const newRole = { id, label: newRoleLabel.trim() };
+    const newRole = { id, label: newRoleLabel.trim(), permissions: [] };
     setRoles([...roles, newRole]);
     setNewRoleLabel('');
   };
 
   const removeRole = (roleId) => {
     setRoles(roles.filter(role => role.id !== roleId));
+  };
+
+  const togglePermission = (roleId, transitionId) => {
+    setRoles(roles.map(role => {
+      if (role.id === roleId) {
+        const hasPermission = role.permissions.includes(transitionId);
+        const newPermissions = hasPermission
+          ? role.permissions.filter(id => id !== transitionId)
+          : [...role.permissions, transitionId];
+        return { ...role, permissions: newPermissions };
+      }
+      return role;
+    }));
   };
 
   const handleDragStart = (e, index) => {
@@ -85,8 +99,25 @@ function WorkflowRoles({ initialRoles = [] }) {
             onDrop={(e) => handleDrop(e, index)}
             className={`role-item ${draggedIndex === index ? 'dragging' : ''}`}
           >
-            <strong>{role.label}</strong> (ID: {role.id})
-            <button onClick={() => removeRole(role.id)}>Remove</button>
+            <div className="role-header">
+              <strong>{role.label}</strong> (ID: {role.id})
+              <button onClick={() => removeRole(role.id)}>Remove</button>
+            </div>
+            {availableTransitions.length > 0 && (
+              <div className="role-permissions">
+                <h4>Allowed Transitions:</h4>
+                {availableTransitions.map(transition => (
+                  <label key={transition.id} className="permission-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={role.permissions.includes(transition.id)}
+                      onChange={() => togglePermission(role.id, transition.id)}
+                    />
+                    {transition.label}
+                  </label>
+                ))}
+              </div>
+            )}
           </li>
         ))}
       </ul>
