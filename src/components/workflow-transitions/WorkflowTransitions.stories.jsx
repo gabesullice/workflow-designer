@@ -1,12 +1,24 @@
 import WorkflowTransitions from './WorkflowTransitions.jsx';
+import { WorkflowProvider } from '../../context/WorkflowContext.jsx';
 
 export default {
-  title: 'Components/WorkflowTransitions',
+  title: 'Components/Subcomponents/WorkflowTransitions',
   component: WorkflowTransitions,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  decorators: [
+    (Story, { args }) => (
+      <WorkflowProvider initialWorkflow={{ 
+        states: args.allowedStates || [], 
+        transitions: args.initialTransitions || [], 
+        roles: [] 
+      }}>
+        <Story />
+      </WorkflowProvider>
+    ),
+  ],
 };
 
 export const Default = {

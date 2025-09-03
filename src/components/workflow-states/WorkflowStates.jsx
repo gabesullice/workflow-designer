@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './WorkflowStates.css';
 import { useWorkflowStates } from '../../hooks/useWorkflowStates.js';
-import { useWorkflowContext } from '../../context/WorkflowContext.jsx';
 import DraggableItemList from '../shared/DraggableItemList.jsx';
 
 function StateItem({ state, onRemove }) {
@@ -14,8 +13,7 @@ function StateItem({ state, onRemove }) {
 }
 
 function WorkflowStates() {
-  const { states, addState, removeState, validationError, setValidationError } = useWorkflowStates();
-  const { updateStates } = useWorkflowContext();
+  const { states, addState, removeState, updateStates, validationError, setValidationError } = useWorkflowStates();
   const [newStateLabel, setNewStateLabel] = useState('');
 
 

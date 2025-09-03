@@ -2,7 +2,7 @@ import WorkflowStates from './WorkflowStates.jsx';
 import { WorkflowProvider } from '../../context/WorkflowContext.jsx';
 
 export default {
-  title: 'Components/WorkflowStates',
+  title: 'Components/Subcomponents/WorkflowStates',
   component: WorkflowStates,
   parameters: {
     layout: 'centered',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './WorkflowRoles.css';
-import { validateMachineName, generateMachineNameFromLabel } from '../../utils/machine-name.js';
 import DraggableItemList from '../shared/DraggableItemList.jsx';
+import { useWorkflowRoles } from '../../hooks/useWorkflowRoles.js';
 
 function RoleItem({ role, availableTransitions, onRemove, onTogglePermission }) {
   return (
@@ -29,57 +29,36 @@ function RoleItem({ role, availableTransitions, onRemove, onTogglePermission }) 
   );
 }
 
-function WorkflowRoles({ initialRoles = [], availableTransitions = [] }) {
-  console.assert(availableTransitions.length > 0 || initialRoles.length === 0, 'availableTransitions prop must not be empty when roles are provided');
-  const [roles, setRoles] = useState(initialRoles);
+function WorkflowRoles() {
+  const {
+    roles,
+    transitions: availableTransitions,
+    addRole,
+    removeRole,
+    togglePermission,
+    updateRoles,
+    validationError,
+    setValidationError
+  } = useWorkflowRoles();
+  
   const [newRoleLabel, setNewRoleLabel] = useState('');
-  const [validationError, setValidationError] = useState('');
 
 
-  const addRole = (e) => {
+  const handleAddRole = (e) => {
     e.preventDefault();
-    if (!newRoleLabel.trim()) return;
-    
-    const id = generateMachineNameFromLabel(newRoleLabel);
-    
-    if (!validateMachineName(id)) {
-      setValidationError('ID must contain only lowercase letters and underscores');
-      return;
+    const success = addRole(newRoleLabel);
+    if (success) {
+      setNewRoleLabel('');
     }
-    
-    if (roles.some(role => role.id === id)) {
-      setValidationError('ID must be unique');
-      return;
-    }
-    
-    setValidationError('');
-    const newRole = { id, label: newRoleLabel.trim(), permissions: [] };
-    setRoles([...roles, newRole]);
-    setNewRoleLabel('');
   };
 
-  const removeRole = (roleId) => {
-    setRoles(roles.filter(role => role.id !== roleId));
-  };
 
-  const togglePermission = (roleId, transitionId) => {
-    setRoles(roles.map(role => {
-      if (role.id === roleId) {
-        const hasPermission = role.permissions.includes(transitionId);
-        const newPermissions = hasPermission
-          ? role.permissions.filter(id => id !== transitionId)
-          : [...role.permissions, transitionId];
-        return { ...role, permissions: newPermissions };
-      }
-      return role;
-    }));
-  };
 
 
   return (
     <div>
       <h2>Workflow Roles</h2>
-      <form onSubmit={addRole}>
+      <form onSubmit={handleAddRole}>
         <input
           type="text"
           value={newRoleLabel}
@@ -91,7 +70,7 @@ function WorkflowRoles({ initialRoles = [], availableTransitions = [] }) {
       </form>
       <DraggableItemList
         items={roles}
-        setItems={setRoles}
+        setItems={updateRoles}
         renderItem={(role) => (
           <RoleItem 
             role={role} 

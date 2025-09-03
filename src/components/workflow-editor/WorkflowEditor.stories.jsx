@@ -9,7 +9,7 @@ export const Empty = {
   args: {}
 };
 
-export const WithSampleData = {
+export const Default = {
   args: {
     initialWorkflow: {
       states: [
