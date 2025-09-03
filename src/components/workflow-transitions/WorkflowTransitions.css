@@ -1,0 +1,20 @@
+.validation-error {
+  color: red;
+}
+
+.transition-item {
+  cursor: move;
+  padding: 8px;
+  margin: 4px 0;
+  border: 1px solid #ccc;
+}
+
+.transition-item.dragging {
+  background-color: #f0f0f0;
+}
+
+.transition-flow {
+  font-size: 0.9em;
+  color: #666;
+  margin: 4px 0;
+}
