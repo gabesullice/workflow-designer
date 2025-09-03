@@ -72,25 +72,40 @@ The diagram definition visualization library
 - [esbuild](https://esbuild.github.io/): The build tool and bundler
 - [Vitest](https://vitest.dev/): The testing framework
 
-Mermaid is imported as an ES module in the browser and is an external
-dependency.
-
 ### Roadmap
 
 Key: `[ ]` Not started, `[/]` In progress, `[x]` Completed
 
-- [ ] Set up the project scaffolding
-- [ ] Build the state editing component
+- [x] Set up the project scaffolding
+- [/] Build the state editing component
+  - [x] Create a functional, unstyled component
+  - [ ] Style the component
 - [ ] Build the role editing component
+  - [x] Create a functional, unstyled component
+  - [ ] Style the component
 - [ ] Build the transition editing component
+  - [x] Create a functional, unstyled component
+  - [ ] Style the component
 - [ ] Build the diagram visualizer
-  - [ ] Build a function that receives the current workflow representation and
-  returns a diagram definition ignoring roles and permissions
-  - [ ] Build the visualization component for the definition
-  - [ ] Adapt the definition function to filter by a single role
-  - [ ] Adapt the definition function to handle one or more roles
-  - [ ] Add a UI component to toggle between one or more roles
-- [ ] Integrate components into the SPA
+  - [x] Build a function that receives the current workflow representation and
+    returns a diagram definition ignoring roles and permissions
+  - [x] Create a functional, unstyled component
+  - [x] Build a functional, unstyled visualization component for the definition
+  - [x] Create a function filter a workflow by to a single role before passing
+    it to the diagram generator function.
+  - [x] Enhance the filter function to support one or more roles to filter by
+  - [x] Add a UI component to toggle between one or more roles
+  - [ ] Style the component
+- [ ] Integrate components
+  - [x] Integrate state, transition, and role components into a single
+    WorkflowEditor component. This receives a single object representing the
+    whole workflow and passes necessary (updatable) data to the child
+    components.
+  - [x] Add additional cross-cutting validation such as preventing state removal
+    when used by a transition (consider a reducer for this).
+  - [x] Add editor and visualizer components to the App component and wire them
+    together with a shared global workflow
+  - [ ] Final polish and style
 
 ### Development style guide
 
@@ -103,5 +118,6 @@ to separate logical units of code.
 
 ### Rules
 
-- Always start with a plan, then ask for refinements, then ask for approval
-before beginning a code implementation.
+- ALWAYS start with a plan, then ask for refinements, then ask for approval
+  before beginning a code implementation. DO NOT make edits before proposing a
+  plan.
