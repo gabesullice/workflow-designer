@@ -119,34 +119,36 @@ function WorkflowTransitions() {
             placeholder="Enter transition label"
           />
         </div>
-        <div className="form-field">
-          <label>From States (hold Ctrl/Cmd to select multiple):</label>
-          <select
-            multiple
-            value={selectedFromStates}
-            onChange={handleFromStatesChange}
-            size="4"
-          >
-            {availableStates.map(state => (
-              <option key={state.id} value={state.id}>
-                {state.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="form-field">
-          <label>To State:</label>
-          <select
-            value={selectedToState}
-            onChange={(e) => setSelectedToState(e.target.value)}
-          >
-            <option value="">Select destination state</option>
-            {availableStates.map(state => (
-              <option key={state.id} value={state.id}>
-                {state.label}
-              </option>
-            ))}
-          </select>
+        <div className="form-fields-row">
+          <div className="form-field">
+            <label>From States (hold Ctrl/Cmd to select multiple):</label>
+            <select
+              multiple
+              value={selectedFromStates}
+              onChange={handleFromStatesChange}
+              size="4"
+            >
+              {availableStates.map(state => (
+                <option key={state.id} value={state.id}>
+                  {state.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-field">
+            <label>To State:</label>
+            <select
+              value={selectedToState}
+              onChange={(e) => setSelectedToState(e.target.value)}
+            >
+              <option value="">Select destination state</option>
+              {availableStates.map(state => (
+                <option key={state.id} value={state.id}>
+                  {state.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <button type="submit">Add Transition</button>
         {validationError && <div className="validation-error">{validationError}</div>}
