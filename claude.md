@@ -52,6 +52,11 @@ permissions are stored in a single JSON object using local storage.
 The diagram definition is derived on-demand from the JSON object and not
 stored.
 
+#### Development Environment
+
+- Node.js: Latest LTS version
+- Package Manager: npm
+
 #### Tech stack
 
 The project is built with:
@@ -64,6 +69,8 @@ library
 - [Mermaid JS](https://mermaid.js.org/intro/getting-started.html#_4-calling-the-mermaid-javascript-api):
 The diagram definition visualization library
 - [Storybook](https://storybook.js.org/docs): The component development tool
+- [esbuild](https://esbuild.github.io/): The build tool and bundler
+- [Vitest](https://vitest.dev/): The testing framework
 
 Mermaid is imported as an ES module in the browser and is an external
 dependency.
