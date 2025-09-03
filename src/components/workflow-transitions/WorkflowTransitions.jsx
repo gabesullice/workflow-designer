@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './WorkflowTransitions.css';
 import DraggableItemList from '../shared/DraggableItemList.jsx';
+import ConfirmationModal from '../shared/ConfirmationModal.jsx';
 import { useWorkflowTransitions } from '../../hooks/useWorkflowTransitions.js';
 
 function TransitionItem({ transition, getStateLabel, onRemove }) {
@@ -24,6 +25,8 @@ function WorkflowTransitions() {
     removeTransition,
     updateTransitions,
     getStateLabel,
+    hasRolePermissions,
+    getAffectedRoles,
     validationError,
     setValidationError
   } = useWorkflowTransitions();
@@ -31,6 +34,12 @@ function WorkflowTransitions() {
   const [newTransitionLabel, setNewTransitionLabel] = useState('');
   const [selectedFromStates, setSelectedFromStates] = useState([]);
   const [selectedToState, setSelectedToState] = useState('');
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    transitionId: null,
+    transitionLabel: '',
+    affectedRoles: []
+  });
 
 
   const handleAddTransition = (e) => {
@@ -47,6 +56,41 @@ function WorkflowTransitions() {
   const handleFromStatesChange = (e) => {
     const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
     setSelectedFromStates(selectedOptions);
+  };
+
+  const handleRemoveTransition = (transitionId) => {
+    const transition = transitions.find(t => t.id === transitionId);
+    
+    if (hasRolePermissions(transitionId)) {
+      const affectedRoles = getAffectedRoles(transitionId);
+      setConfirmationModal({
+        isOpen: true,
+        transitionId,
+        transitionLabel: transition.label,
+        affectedRoles
+      });
+    } else {
+      removeTransition(transitionId);
+    }
+  };
+
+  const handleConfirmRemoval = () => {
+    removeTransition(confirmationModal.transitionId);
+    setConfirmationModal({
+      isOpen: false,
+      transitionId: null,
+      transitionLabel: '',
+      affectedRoles: []
+    });
+  };
+
+  const handleCancelRemoval = () => {
+    setConfirmationModal({
+      isOpen: false,
+      transitionId: null,
+      transitionLabel: '',
+      affectedRoles: []
+    });
   };
 
 
@@ -102,10 +146,19 @@ function WorkflowTransitions() {
           <TransitionItem 
             transition={transition}
             getStateLabel={getStateLabel}
-            onRemove={removeTransition}
+            onRemove={handleRemoveTransition}
           />
         )}
         itemClassName="transition-item"
+      />
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onConfirm={handleConfirmRemoval}
+        onCancel={handleCancelRemoval}
+        title="Remove Transition"
+        message={`Removing "${confirmationModal.transitionLabel}" will also remove permissions for these roles: ${confirmationModal.affectedRoles.join(', ')}. Are you sure you want to continue?`}
+        confirmText="Remove"
+        cancelText="Cancel"
       />
     </div>
   );

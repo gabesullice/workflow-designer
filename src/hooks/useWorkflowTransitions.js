@@ -3,10 +3,11 @@ import { validateMachineName, generateMachineNameFromLabel } from '../utils/mach
 import { useWorkflowContext } from '../context/WorkflowContext.jsx';
 
 export function useWorkflowTransitions() {
-  const { workflow, updateTransitions } = useWorkflowContext();
+  const { workflow, updateTransitions, updateRoles } = useWorkflowContext();
   const [validationError, setValidationError] = useState('');
   const transitions = workflow.transitions;
   const states = workflow.states;
+  const roles = workflow.roles;
 
   const addTransition = (label, fromStates, toState) => {
     if (!label.trim()) {
@@ -49,6 +50,21 @@ export function useWorkflowTransitions() {
 
   const removeTransition = (transitionId) => {
     updateTransitions(transitions.filter(transition => transition.id !== transitionId));
+    const updatedRoles = roles.map(role => ({
+      ...role,
+      permissions: role.permissions.filter(permission => permission !== transitionId)
+    }));
+    updateRoles(updatedRoles);
+  };
+
+  const hasRolePermissions = (transitionId) => {
+    return roles.some(role => role.permissions.includes(transitionId));
+  };
+
+  const getAffectedRoles = (transitionId) => {
+    return roles
+      .filter(role => role.permissions.includes(transitionId))
+      .map(role => role.label);
   };
 
   const getStateLabel = (stateId) => {
@@ -63,6 +79,8 @@ export function useWorkflowTransitions() {
     removeTransition,
     updateTransitions,
     getStateLabel,
+    hasRolePermissions,
+    getAffectedRoles,
     validationError,
     setValidationError
   };
