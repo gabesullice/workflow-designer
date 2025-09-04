@@ -21,7 +21,23 @@ export function WorkflowProvider({ children, initialWorkflow = { states: [], tra
   };
 
   const updateRoles = (newRoles) => {
-    setWorkflow({ ...workflow, roles: newRoles });
+    const currentRoleIds = workflow.roles.map(role => role.id);
+    const newRoleIds = newRoles.map(role => role.id);
+    
+    // Find roles that were removed
+    const removedRoleIds = currentRoleIds.filter(id => !newRoleIds.includes(id));
+    
+    // Find roles that were added
+    const addedRoleIds = newRoleIds.filter(id => !currentRoleIds.includes(id));
+    
+    // Update selectedRoleIds: remove deleted roles, add new roles, preserve existing
+    const updatedSelectedRoleIds = selectedRoleIds
+      .filter(id => !removedRoleIds.includes(id)) // Remove deleted roles
+      .concat(addedRoleIds); // Add new roles (auto-selected)
+    
+    // Update workflow data without using setWorkflow to avoid resetting selections
+    setWorkflowLocalStorage({ ...workflow, roles: newRoles });
+    setSelectedRoleIds(updatedSelectedRoleIds);
   };
 
   const updateSelectedRoleIds = (roleIds) => {
