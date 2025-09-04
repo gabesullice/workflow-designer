@@ -28,13 +28,19 @@ export function WorkflowProvider({ children, initialWorkflow = { states: [], tra
     setSelectedRoleIds(roleIds);
   };
 
+  const resetWorkflow = () => {
+    const emptyWorkflow = { states: [], transitions: [], roles: [] };
+    setWorkflow(emptyWorkflow);
+  };
+
   const value = {
     workflow,
     selectedRoleIds,
     updateStates,
     updateTransitions,
     updateRoles,
-    updateSelectedRoleIds
+    updateSelectedRoleIds,
+    resetWorkflow
   };
 
   return (
