@@ -106,7 +106,7 @@ function AppContent() {
     <div className="app-container">
       <header className="app-header">
         <h1>Workflow Designer</h1>
-        <p className="app-subtitle">Design and visualize your workflow states, transitions, and roles</p>
+        <p className="app-subtitle">Design and visualize your workflow states, transitions, and roles.</p>
       </header>
       
       <main className="app-main">
