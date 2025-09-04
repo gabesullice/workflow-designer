@@ -164,6 +164,34 @@ input, textarea {
   text-align: center;
 }
 
+/* Empty Workflow State */
+.empty-workflow-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.empty-workflow-content {
+  max-width: 400px;
+  padding: var(--space-8);
+}
+
+.empty-workflow-title {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  font-weight: 600;
+}
+
+.empty-workflow-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-8);
+  line-height: 1.6;
+}
+
 /* Card Component */
 .card {
   background: var(--color-surface);
