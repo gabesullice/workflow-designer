@@ -1,21 +1,27 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import useLocalStorage from '../hooks/useLocalStorage.js';
 
 const WorkflowContext = createContext();
 
 export function WorkflowProvider({ children, initialWorkflow = { states: [], transitions: [], roles: [] } }) {
-  const [workflow, setWorkflow] = useState(initialWorkflow);
-  const [selectedRoleIds, setSelectedRoleIds] = useState(initialWorkflow.roles.map(role => role.id));
+  const [workflow, setWorkflowLocalStorage] = useLocalStorage('workflow', initialWorkflow);
+  const [selectedRoleIds, setSelectedRoleIds] = useState(workflow.roles.map(role => role.id));
+
+  const setWorkflow = (newWorkflow) => {
+    setWorkflowLocalStorage(newWorkflow);
+    setSelectedRoleIds(newWorkflow.roles.map(role => role.id));
+  };
 
   const updateStates = (newStates) => {
-    setWorkflow(prev => ({ ...prev, states: newStates }));
+    setWorkflow({ ...workflow, states: newStates });
   };
 
   const updateTransitions = (newTransitions) => {
-    setWorkflow(prev => ({ ...prev, transitions: newTransitions }));
+    setWorkflow({ ...workflow, transitions: newTransitions });
   };
 
   const updateRoles = (newRoles) => {
-    setWorkflow(prev => ({ ...prev, roles: newRoles }));
+    setWorkflow({ ...workflow, roles: newRoles });
   };
 
   const updateSelectedRoleIds = (roleIds) => {
