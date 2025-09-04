@@ -56,4 +56,10 @@ describe('generateWorkflowDiagram', () => {
     const result = generateWorkflowDiagram(workflow);
     expect(result.trim()).toBe(expected);
   });
+
+  it('generates multiple colored edges for multi-role transitions', () => {
+    const { workflow, expected } = loadTestFixture('multi-role-edges');
+    const result = generateWorkflowDiagram(workflow);
+    expect(result.trim()).toBe(expected);
+  });
 });

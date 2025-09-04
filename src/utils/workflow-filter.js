@@ -5,34 +5,31 @@ export function filterWorkflowByRoles(workflow, selectedRoleIds = []) {
   console.assert(Array.isArray(workflow.roles), 'Workflow.roles must be an array');
   console.assert(Array.isArray(selectedRoleIds), 'selectedRoleIds must be an array');
 
-  // If no roles are selected, return the original workflow
-  if (selectedRoleIds.length === 0) {
-    return workflow;
-  }
+  // Annotate transitions with their allowed roles
+  const annotatedTransitions = workflow.transitions.map(transition => {
+    // Find all roles that have permission for this transition
+    const allowedRoles = workflow.roles
+      .filter(role => role.permissions.includes(transition.id))
+      .map(role => role.id);
 
-  // Get all transitions that at least one of the selected roles has permission for
-  const allowedTransitions = workflow.transitions.filter(transition => {
-    return selectedRoleIds.some(roleId => {
-      const role = workflow.roles.find(r => r.id === roleId);
-      return role && role.permissions.includes(transition.id);
-    });
+    // If no roles are selected (showing all), use all allowed roles
+    // Otherwise, filter to only selected roles that are also allowed
+    let filteredRoles;
+    if (selectedRoleIds.length === 0) {
+      filteredRoles = allowedRoles;
+    } else {
+      filteredRoles = allowedRoles.filter(roleId => selectedRoleIds.includes(roleId));
+    }
+
+    return {
+      ...transition,
+      allowedRoles: filteredRoles
+    };
   });
-
-  // Get all state IDs that are referenced by allowed transitions
-  const referencedStateIds = new Set();
-  allowedTransitions.forEach(transition => {
-    transition.fromStates.forEach(stateId => referencedStateIds.add(stateId));
-    referencedStateIds.add(transition.toState);
-  });
-
-  // Include all states (both referenced and orphaned)
-  // Orphaned states will be handled by the diagram generator
-  const filteredStates = workflow.states;
 
   return {
     ...workflow,
-    states: filteredStates,
-    transitions: allowedTransitions
+    transitions: annotatedTransitions
   };
 }
 

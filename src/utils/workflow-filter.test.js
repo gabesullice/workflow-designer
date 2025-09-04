@@ -57,67 +57,111 @@ const mockWorkflow = {
 };
 
 describe('filterWorkflowByRoles', () => {
-  it('returns original workflow when no roles are selected', () => {
+  it('returns annotated workflow when no roles are selected', () => {
     const result = filterWorkflowByRoles(mockWorkflow, []);
-    expect(result).toEqual(mockWorkflow);
+    expect(result.states).toEqual(mockWorkflow.states);
+    expect(result.roles).toEqual(mockWorkflow.roles);
+    expect(result.transitions).toHaveLength(4);
+    // All transitions should be accessible when no roles are selected (showing all)
+    result.transitions.forEach(transition => {
+      expect(transition.allowedRoles.length).toBeGreaterThan(0);
+      expect(transition.allowedRoles).toEqual(
+        expect.arrayContaining(mockWorkflow.roles
+          .filter(role => role.permissions.includes(transition.id))
+          .map(role => role.id))
+      );
+    });
   });
 
-  it('returns original workflow when empty selectedRoleIds array is passed', () => {
+  it('returns annotated workflow when empty selectedRoleIds array is passed', () => {
     const result = filterWorkflowByRoles(mockWorkflow);
-    expect(result).toEqual(mockWorkflow);
+    expect(result.states).toEqual(mockWorkflow.states);
+    expect(result.roles).toEqual(mockWorkflow.roles);
+    expect(result.transitions).toHaveLength(4);
+    // All transitions should be accessible when no roles are selected (showing all)
+    result.transitions.forEach(transition => {
+      expect(transition.allowedRoles.length).toBeGreaterThan(0);
+    });
   });
 
   it('filters transitions for writer role only', () => {
     const result = filterWorkflowByRoles(mockWorkflow, ['writer']);
     
     expect(result.states).toEqual(mockWorkflow.states);
-    expect(result.transitions).toHaveLength(1);
-    expect(result.transitions[0].id).toBe('submit_for_review');
+    expect(result.transitions).toHaveLength(4); // All transitions are included
     expect(result.roles).toEqual(mockWorkflow.roles);
+    
+    // Only submit_for_review should be accessible for writer
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(1);
+    expect(accessibleTransitions[0].id).toBe('submit_for_review');
+    expect(accessibleTransitions[0].allowedRoles).toContain('writer');
   });
 
   it('filters transitions for editor role only', () => {
     const result = filterWorkflowByRoles(mockWorkflow, ['editor']);
     
     expect(result.states).toEqual(mockWorkflow.states);
-    expect(result.transitions).toHaveLength(3);
-    expect(result.transitions.map(t => t.id)).toEqual(['approve', 'send_back', 'publish']);
+    expect(result.transitions).toHaveLength(4); // All transitions are included
+    
+    // Editor should have access to approve, send_back, publish
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(3);
+    expect(accessibleTransitions.map(t => t.id)).toEqual(['approve', 'send_back', 'publish']);
   });
 
   it('filters transitions for admin role (has all permissions)', () => {
     const result = filterWorkflowByRoles(mockWorkflow, ['admin']);
     
     expect(result.states).toEqual(mockWorkflow.states);
-    expect(result.transitions).toEqual(mockWorkflow.transitions);
+    expect(result.transitions).toHaveLength(4);
+    
+    // Admin should have access to all transitions
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(4);
+    accessibleTransitions.forEach(transition => {
+      expect(transition.allowedRoles).toContain('admin');
+    });
   });
 
   it('combines permissions when multiple roles are selected', () => {
     const result = filterWorkflowByRoles(mockWorkflow, ['writer', 'editor']);
     
     expect(result.states).toEqual(mockWorkflow.states);
-    expect(result.transitions).toEqual(mockWorkflow.transitions);
+    expect(result.transitions).toHaveLength(4);
+    
+    // All transitions should be accessible when writer+editor are selected
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(4);
   });
 
   it('handles partial role selection', () => {
     const result = filterWorkflowByRoles(mockWorkflow, ['writer']);
     
-    expect(result.transitions).toHaveLength(1);
-    expect(result.transitions[0].id).toBe('submit_for_review');
+    expect(result.transitions).toHaveLength(4); // All transitions are included
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(1);
+    expect(accessibleTransitions[0].id).toBe('submit_for_review');
   });
 
   it('handles non-existent role IDs gracefully', () => {
     const result = filterWorkflowByRoles(mockWorkflow, ['non_existent_role']);
     
     expect(result.states).toEqual(mockWorkflow.states);
-    expect(result.transitions).toHaveLength(0);
+    expect(result.transitions).toHaveLength(4); // All transitions are included
+    // No transitions should be accessible for non-existent role
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(0);
   });
 
   it('handles mixed valid and invalid role IDs', () => {
     const result = filterWorkflowByRoles(mockWorkflow, ['writer', 'non_existent_role']);
     
     expect(result.states).toEqual(mockWorkflow.states);
-    expect(result.transitions).toHaveLength(1);
-    expect(result.transitions[0].id).toBe('submit_for_review');
+    expect(result.transitions).toHaveLength(4); // All transitions are included
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(1);
+    expect(accessibleTransitions[0].id).toBe('submit_for_review');
   });
 
   it('preserves other workflow properties', () => {
@@ -191,7 +235,9 @@ describe('edge cases and error handling', () => {
     
     const result = filterWorkflowByRoles(emptyStatesWorkflow, ['writer']);
     expect(result.states).toEqual([]);
-    expect(result.transitions).toHaveLength(1);
+    expect(result.transitions).toHaveLength(4); // All transitions are included
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(1);
   });
 
   it('handles empty workflow transitions', () => {
@@ -211,7 +257,10 @@ describe('edge cases and error handling', () => {
     };
     
     const result = filterWorkflowByRoles(emptyRolesWorkflow, ['writer']);
-    expect(result.transitions).toEqual([]);
+    expect(result.transitions).toHaveLength(4); // All transitions are included
+    // No transitions should be accessible when no roles exist
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(0);
   });
 
   it('handles role with empty permissions array', () => {
@@ -224,7 +273,10 @@ describe('edge cases and error handling', () => {
     };
     
     const result = filterWorkflowByRoles(workflowWithEmptyPermissions, ['viewer']);
-    expect(result.transitions).toEqual([]);
+    expect(result.transitions).toHaveLength(4); // All transitions are included
+    // No transitions should be accessible for role with empty permissions
+    const accessibleTransitions = result.transitions.filter(t => t.allowedRoles.length > 0);
+    expect(accessibleTransitions).toHaveLength(0);
   });
 
   it('handles transitions with multiple fromStates', () => {
@@ -233,5 +285,7 @@ describe('edge cases and error handling', () => {
     
     expect(sendBackTransition).toBeDefined();
     expect(sendBackTransition.fromStates).toEqual(['review', 'approved']);
+    expect(sendBackTransition.allowedRoles.length).toBeGreaterThan(0);
+    expect(sendBackTransition.allowedRoles).toContain('editor');
   });
 });

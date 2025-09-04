@@ -1,4 +1,4 @@
-import { generateWorkflowDiagram } from './diagram-generator.js';
+import { generateWorkflowDiagram, getWorkflowRoleColors } from './diagram-generator.js';
 import { DiagramVisualizer } from '../components/diagram-visualizer/DiagramVisualizer.jsx';
 
 // Import test fixtures
@@ -8,6 +8,7 @@ import orphanedStates from './test-fixtures/orphaned-states.json';
 import emptyWorkflow from './test-fixtures/empty-workflow.json';
 import statesOnly from './test-fixtures/states-only.json';
 import specialCharacters from './test-fixtures/special-characters.json';
+import multiRoleEdges from './test-fixtures/multi-role-edges.json';
 
 export default {
   title: 'Utils/Diagram Generator',
@@ -22,11 +23,13 @@ const workflows = {
   'Orphaned States': orphanedStates,
   'Empty Workflow': emptyWorkflow,
   'States Only': statesOnly,
-  'Special Characters': specialCharacters
+  'Special Characters': specialCharacters,
+  'Multi-Role Edges': multiRoleEdges
 };
 
 function DiagramDisplay({ workflow, title }) {
   const diagramDefinition = generateWorkflowDiagram(workflow);
+  const roleColors = getWorkflowRoleColors(workflow);
   
   return (
     <div style={{ padding: '20px' }}>
@@ -38,7 +41,10 @@ function DiagramDisplay({ workflow, title }) {
           padding: '20px',
           backgroundColor: '#fafafa'
         }}>
-          <DiagramVisualizer diagramDefinition={diagramDefinition} />
+          <DiagramVisualizer 
+            diagramDefinition={diagramDefinition} 
+            roleColors={roleColors}
+          />
         </div>
       </div>
       <div style={{ marginBottom: '20px' }}>
@@ -108,5 +114,12 @@ export const SpecialCharacters = () => (
   <DiagramDisplay 
     workflow={workflows['Special Characters']} 
     title="Workflow with Special Characters in Labels"
+  />
+);
+
+export const MultiRoleEdges = () => (
+  <DiagramDisplay 
+    workflow={workflows['Multi-Role Edges']} 
+    title="Multi-Role Transition with Colored Edges"
   />
 );

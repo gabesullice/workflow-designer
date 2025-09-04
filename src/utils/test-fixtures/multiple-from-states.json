@@ -9,7 +9,10 @@
       "id": "publish",
       "label": "Publish",
       "fromStates": ["draft", "review"],
-      "toState": "published"
+      "toState": "published",
+      "allowedRoles": [],
+      "isAccessible": false
     }
-  ]
+  ],
+  "roles": []
 }

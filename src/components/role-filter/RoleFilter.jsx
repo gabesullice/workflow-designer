@@ -1,5 +1,6 @@
 import React from 'react';
 import { useWorkflowContext } from '../../context/WorkflowContext.jsx';
+import { getRoleColor } from '../../utils/role-colors.js';
 import './RoleFilter.css';
 
 function RoleFilter() {
@@ -25,7 +26,6 @@ function RoleFilter() {
 
   return (
     <div className="role-filter">
-      <h3>Filter by Role</h3>
       <div className="role-filter-controls">
         <button 
           className={`role-toggle-button ${allSelected ? 'active' : ''}`}
@@ -39,6 +39,10 @@ function RoleFilter() {
             className={`role-toggle-button ${selectedRoleIds.includes(role.id) ? 'active' : ''}`}
             onClick={() => handleRoleToggle(role.id)}
           >
+            <span 
+              className="role-color-dot"
+              style={{ backgroundColor: getRoleColor(role.id) }}
+            ></span>
             {role.label}
           </button>
         ))}

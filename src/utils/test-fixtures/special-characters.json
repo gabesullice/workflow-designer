@@ -8,7 +8,10 @@
       "id": "submit_for_review",
       "label": "Submit for review: \"Ready!\"",
       "fromStates": ["draft"],
-      "toState": "in_review"
+      "toState": "in_review",
+      "allowedRoles": [],
+      "isAccessible": false
     }
-  ]
+  ],
+  "roles": []
 }

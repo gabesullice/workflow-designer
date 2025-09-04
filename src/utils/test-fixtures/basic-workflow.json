@@ -8,7 +8,12 @@
       "id": "submit_for_review",
       "label": "Submit for review",
       "fromStates": ["draft"],
-      "toState": "review"
+      "toState": "review",
+      "allowedRoles": ["writer"],
+      "isAccessible": true
     }
+  ],
+  "roles": [
+    { "id": "writer", "label": "Writer", "permissions": ["submit_for_review"] }
   ]
 }

@@ -3,5 +3,6 @@
     { "id": "draft", "label": "Draft" },
     { "id": "review", "label": "In Review" }
   ],
-  "transitions": []
+  "transitions": [],
+  "roles": []
 }
