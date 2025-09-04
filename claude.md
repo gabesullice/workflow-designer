@@ -52,11 +52,6 @@ permissions are stored in a single JSON object using local storage.
 The diagram definition is derived on-demand from the JSON object and not
 stored.
 
-#### Development Environment
-
-- Node.js: Latest LTS version
-- Package Manager: npm
-
 #### Tech stack
 
 The project is built with:
@@ -64,48 +59,10 @@ The project is built with:
 - [React](https://react.dev/reference/react): The UI framework
 - [Tailwind CSS](https://tailwindcss.com/docs/installation/using-vite): The CSS
 framework
-- [Ark UI](https://ark-ui.com/docs/overview/introduction): The UI component
 library
 - [Mermaid JS](https://mermaid.js.org/intro/getting-started.html#_4-calling-the-mermaid-javascript-api):
 The diagram definition visualization library
 - [Storybook](https://storybook.js.org/docs): The component development tool
-- [esbuild](https://esbuild.github.io/): The build tool and bundler
-- [Vitest](https://vitest.dev/): The testing framework
-
-### Roadmap
-
-Key: `[ ]` Not started, `[/]` In progress, `[x]` Completed
-
-- [x] Set up the project scaffolding
-- [/] Build the state editing component
-  - [x] Create a functional, unstyled component
-  - [ ] Style the component
-- [ ] Build the role editing component
-  - [x] Create a functional, unstyled component
-  - [ ] Style the component
-- [ ] Build the transition editing component
-  - [x] Create a functional, unstyled component
-  - [ ] Style the component
-- [ ] Build the diagram visualizer
-  - [x] Build a function that receives the current workflow representation and
-    returns a diagram definition ignoring roles and permissions
-  - [x] Create a functional, unstyled component
-  - [x] Build a functional, unstyled visualization component for the definition
-  - [x] Create a function filter a workflow by to a single role before passing
-    it to the diagram generator function.
-  - [x] Enhance the filter function to support one or more roles to filter by
-  - [x] Add a UI component to toggle between one or more roles
-  - [ ] Style the component
-- [ ] Integrate components
-  - [x] Integrate state, transition, and role components into a single
-    WorkflowEditor component. This receives a single object representing the
-    whole workflow and passes necessary (updatable) data to the child
-    components.
-  - [x] Add additional cross-cutting validation such as preventing state removal
-    when used by a transition (consider a reducer for this).
-  - [x] Add editor and visualizer components to the App component and wire them
-    together with a shared global workflow
-  - [ ] Final polish and style
 
 ### Development style guide
 
@@ -115,6 +72,7 @@ Key: `[ ]` Not started, `[/]` In progress, `[x]` Completed
 to separate logical units of code.
 - Use descriptive variable names.
 - Files must always end with a single newline.
+- Avoid inline styles if possible. Prefer to import CSS into the component.
 
 ### Rules
 
