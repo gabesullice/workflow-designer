@@ -4,9 +4,11 @@ import WorkflowEditor from './components/workflow-editor/WorkflowEditor.jsx';
 import RoleFilter from './components/role-filter/RoleFilter.jsx';
 import { DiagramVisualizer } from './components/diagram-visualizer/DiagramVisualizer.jsx';
 import ConfirmationModal from './components/shared/ConfirmationModal.jsx';
+import ShareButton from './components/ShareButton.jsx';
 import { generateWorkflowDiagram, getWorkflowRoleColors } from './utils/diagram-generator.js';
 import { filterWorkflowByRoles } from './utils/workflow-filter.js';
 import { useWorkflowContext } from './context/WorkflowContext.jsx';
+import { getWorkflowFromUrl } from './utils/workflow-sharing.js';
 
 function DiagramVisualizerContainer() {
   const { workflow, selectedRoleIds } = useWorkflowContext();
@@ -105,8 +107,13 @@ function AppContent() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>Workflow Designer</h1>
-        <p className="app-subtitle">Design and visualize your workflow states, transitions, and roles.</p>
+        <div className="app-header-content">
+          <h1>Workflow Designer</h1>
+          <p className="app-subtitle">Design and visualize your workflow states, transitions, and roles.</p>
+        </div>
+        <div className="app-header-actions">
+          <ShareButton />
+        </div>
       </header>
       
       <main className="app-main">
@@ -138,8 +145,11 @@ function AppContent() {
 }
 
 function App({ initialWorkflow }) {
+  // Try to get workflow from URL if no initialWorkflow provided
+  const workflowFromUrl = initialWorkflow || getWorkflowFromUrl();
+  
   return (
-    <WorkflowProvider initialWorkflow={initialWorkflow}>
+    <WorkflowProvider initialWorkflow={workflowFromUrl}>
       <AppContent />
     </WorkflowProvider>
   );

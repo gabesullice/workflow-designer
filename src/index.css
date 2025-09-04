@@ -137,9 +137,20 @@ input, textarea {
 }
 
 .app-header {
+  position: relative;
   text-align: center;
   margin-top: var(--space-10);
   margin-bottom: var(--space-12);
+}
+
+.app-header-content {
+  /* Keep title and subtitle centered */
+}
+
+.app-header-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .app-subtitle {
@@ -338,6 +349,18 @@ input, textarea {
   background-color: var(--color-border-subtle);
   border-color: var(--color-border);
   border-width: 2px;
+}
+
+.btn-success {
+  background-color: var(--color-success);
+  color: white;
+  border-color: var(--color-success);
+}
+
+.btn-success:hover {
+  background-color: #38a169;
+  border-color: #38a169;
+  box-shadow: var(--shadow-md);
 }
 
 .btn-danger {

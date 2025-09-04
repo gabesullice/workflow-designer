@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage.js';
+import { removeWorkflowFromUrl } from '../utils/workflow-sharing.js';
 
 const WorkflowContext = createContext();
 
@@ -10,6 +11,7 @@ export function WorkflowProvider({ children, initialWorkflow = { states: [], tra
   const setWorkflow = (newWorkflow) => {
     setWorkflowLocalStorage(newWorkflow);
     setSelectedRoleIds(newWorkflow.roles.map(role => role.id));
+    removeWorkflowFromUrl();
   };
 
   const updateStates = (newStates) => {
@@ -38,6 +40,7 @@ export function WorkflowProvider({ children, initialWorkflow = { states: [], tra
     // Update workflow data without using setWorkflow to avoid resetting selections
     setWorkflowLocalStorage({ ...workflow, roles: newRoles });
     setSelectedRoleIds(updatedSelectedRoleIds);
+    removeWorkflowFromUrl();
   };
 
   const updateSelectedRoleIds = (roleIds) => {
