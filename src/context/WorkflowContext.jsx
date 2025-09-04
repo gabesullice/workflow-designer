@@ -4,7 +4,7 @@ const WorkflowContext = createContext();
 
 export function WorkflowProvider({ children, initialWorkflow = { states: [], transitions: [], roles: [] } }) {
   const [workflow, setWorkflow] = useState(initialWorkflow);
-  const [selectedRoleIds, setSelectedRoleIds] = useState([]);
+  const [selectedRoleIds, setSelectedRoleIds] = useState(initialWorkflow.roles.map(role => role.id));
 
   const updateStates = (newStates) => {
     setWorkflow(prev => ({ ...prev, states: newStates }));

@@ -23,8 +23,8 @@ function App({ initialWorkflow }) {
         <h1>Workflow Designer</h1>
         <div>
           <div>
-            <DiagramVisualizerContainer />
             <RoleFilter />
+            <DiagramVisualizerContainer />
           </div>
           <div>
             <WorkflowEditor />

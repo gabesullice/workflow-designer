@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
+import './DiagramVisualizer.css';
 
 export function DiagramVisualizer({ diagramDefinition, roleColors = {}, className = '' }) {
   const containerRef = useRef(null);
@@ -173,7 +174,7 @@ export function DiagramVisualizer({ diagramDefinition, roleColors = {}, classNam
   return (
     <div 
       ref={containerRef} 
-      className={className}
+      className={`diagram-visualizer ${className}`}
       data-testid="diagram-visualizer"
     />
   );

@@ -27,12 +27,6 @@ function RoleFilter() {
   return (
     <div className="role-filter">
       <div className="role-filter-controls">
-        <button 
-          className={`role-toggle-button ${allSelected ? 'active' : ''}`}
-          onClick={handleSelectAll}
-        >
-          All Roles
-        </button>
         {workflow.roles.map(role => (
           <button
             key={role.id}
