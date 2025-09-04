@@ -4,7 +4,7 @@ import { removeWorkflowFromUrl } from '../utils/workflow-sharing.js';
 
 const WorkflowContext = createContext();
 
-export function WorkflowProvider({ children, initialWorkflow = { states: [], transitions: [], roles: [] } }) {
+export function WorkflowProvider({ children, initialWorkflow }) {
   const [workflow, setWorkflowLocalStorage] = useLocalStorage('workflow', initialWorkflow);
   const [selectedRoleIds, setSelectedRoleIds] = useState(workflow.roles.map(role => role.id));
 

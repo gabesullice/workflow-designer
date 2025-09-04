@@ -146,8 +146,9 @@ function AppContent() {
 
 function App({ initialWorkflow }) {
   // Try to get workflow from URL if no initialWorkflow provided
-  const workflowFromUrl = initialWorkflow || getWorkflowFromUrl();
-  
+  const emptyWorkflow = { states: [], transitions: [], roles: [] };
+  const workflowFromUrl = initialWorkflow || getWorkflowFromUrl() || emptyWorkflow;
+
   return (
     <WorkflowProvider initialWorkflow={workflowFromUrl}>
       <AppContent />
