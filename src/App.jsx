@@ -19,17 +19,26 @@ function DiagramVisualizerContainer() {
 function App({ initialWorkflow }) {
   return (
     <WorkflowProvider initialWorkflow={initialWorkflow}>
-      <div>
-        <h1>Workflow Designer</h1>
-        <div>
-          <div>
-            <RoleFilter />
-            <DiagramVisualizerContainer />
+      <div className="app-container">
+        <header className="app-header">
+          <h1>Workflow Designer</h1>
+          <p className="app-subtitle">Design and visualize your workflow states, transitions, and roles</p>
+        </header>
+        
+        <main className="app-main">
+          <div className="diagram-section">
+            <div className="card">
+              <RoleFilter />
+              <DiagramVisualizerContainer />
+            </div>
           </div>
-          <div>
-            <WorkflowEditor />
+          
+          <div className="editor-section">
+            <div className="card">
+              <WorkflowEditor />
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     </WorkflowProvider>
   );

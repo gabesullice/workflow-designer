@@ -2,36 +2,74 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .draggable-item {
   display: flex;
   align-items: center;
-  padding: 8px;
-  margin: 4px 0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   cursor: move;
+  position: relative;
+  overflow: hidden;
+  transition: 
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
-.draggable-item.dragging {
-  background-color: #f0f0f0;
+.draggable-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, var(--color-accent) 0%, #9f7aea 100%);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  opacity: 0;
 }
+
+.draggable-item:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(159, 122, 234, 0.08) 100%);
+}
+
+.draggable-item:hover::before {
+  opacity: 1;
+}
+
 
 .drag-handle {
   cursor: grab;
-  padding: 4px 8px;
-  margin-right: 8px;
-  color: #666;
+  padding: var(--space-2);
+  margin-right: var(--space-3);
+  color: var(--color-text-muted);
   user-select: none;
   display: flex;
   align-items: center;
-  max-height: 24px;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--color-border-subtle);
+  transition: 
+    color var(--transition-fast);
 }
 
 .drag-handle:active {
   cursor: grabbing;
+}
+
+.draggable-item:hover .drag-handle {
+  background-color: var(--color-border);
+  color: var(--color-text-secondary);
 }
 
 .item-content {
@@ -39,34 +77,50 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: 500;
+  color: var(--color-text-primary);
 }
 
 .delete-button {
-  margin-left: 8px;
-  padding: 4px 8px;
-  border: none;
+  margin-left: var(--space-3);
+  padding: var(--space-2);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
   background: none;
   cursor: pointer;
-  font-size: 16px;
-  color: #666;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .delete-button:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(245, 101, 101, 0.1);
+  color: var(--color-danger);
+  border-color: rgba(245, 101, 101, 0.2);
 }
 
 .item-id {
-  font-family: 'Courier New', Consolas, monospace;
-  color: #999;
-  font-size: 0.9em;
+  font-family: var(--font-family-mono);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
   opacity: 0;
-  transition: opacity 0.2s;
-  margin-left: 8px;
+  margin-left: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
 }
 
 .draggable-item:hover .item-id,
 .draggable-item:focus .item-id {
   opacity: 1;
+  background: var(--color-border);
+  color: var(--color-text-primary);
 }

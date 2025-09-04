@@ -43,7 +43,7 @@ export function generateWorkflowDiagram(workflow) {
   let diagram = "flowchart LR\n";
   
   // Add modern node styling
-  diagram += "    classDef default fill:transparent,stroke:#333,stroke-width:2px,font-weight:600\n";
+  diagram += "    classDef default fill:transparent,stroke:#e1e8ed,stroke-width:2px,font-weight:600\n";
   
   workflow.transitions.forEach(transition => {
     console.assert(Array.isArray(transition.fromStates), `Transition ${transition.id} must have fromStates array`);

@@ -1,0 +1,26 @@
+/* Workflow Editor Layout */
+.workflow-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.workflow-editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .workflow-editor-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+.states-section,
+.transitions-section,
+.roles-section {
+  min-height: 0;
+}

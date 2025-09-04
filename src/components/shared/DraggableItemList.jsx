@@ -35,7 +35,7 @@ function DraggableItemList({
           onDragStart={(e) => handleDragStart(e, index)}
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, index)}
-          className={`draggable-item ${draggedIndex === index ? 'dragging' : ''} ${itemClassName}`}
+          className={`draggable-item ${itemClassName}`}
         >
           <div className="drag-handle">
             <svg width="12" height="16" viewBox="0 0 12 16" fill="none">

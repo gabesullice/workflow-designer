@@ -51,7 +51,7 @@ export function DiagramVisualizer({ diagramDefinition, roleColors = {}, classNam
             
             /* Inaccessible transition styling */
             #${diagramId.current} path[id*="-inaccessible"] {
-              stroke: #ccc !important;
+              stroke: #718096 !important;
               stroke-width: 1px !important;
               stroke-dasharray: 5 5 !important;
               opacity: 0.6 !important;
