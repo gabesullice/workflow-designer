@@ -2,20 +2,17 @@ import he from 'he';
 import { getRoleColor, getRoleClassName } from './role-colors.js';
 
 function sanitizeMermaidLabel(label) {
-  if (!label) return '';
-  
-  // First manually replace colons to avoid double-encoding
-  const withColons = label.replace(/:/g, '#58;');
-  
   // Then use 'he' library to encode other HTML entities
-  const encoded = he.encode(withColons, {
+  const encoded = he.encode(label, {
     useNamedReferences: true,
-    decimal: false,
-    encodeEverything: false
+    decimal: true,
+    encodeEverything: true
   });
-  
+
   // Convert HTML entities to Mermaid's expected format (# instead of &)
-  return encoded.replace(/&/g, '#');
+  const entityEncoded = encoded.replace(/&#?/g, '#');
+
+  return entityEncoded;
 }
 
 export function getWorkflowRoleColors(workflow) {
@@ -77,14 +74,16 @@ export function generateWorkflowDiagram(workflow) {
   // Add state label definitions for all states
   workflow.states.forEach(state => {
     const displayLabel = stateIdToLabel.get(state.id) || state.id;
-    diagram += `    ${state.id}(${displayLabel})\n`;
+    const sanitizedLabel = sanitizeMermaidLabel(displayLabel);
+    diagram += `    ${state.id}(${sanitizedLabel})\n`;
   });
   
   // Add orphaned states (states not referenced in transitions)
   workflow.states.forEach(state => {
     if (!referencedStates.has(state.id)) {
       const displayLabel = stateIdToLabel.get(state.id) || state.id;
-      diagram += `    ${state.id}(${displayLabel})\n`;
+      const sanitizedLabel = sanitizeMermaidLabel(displayLabel);
+      diagram += `    ${state.id}(${sanitizedLabel})\n`;
     }
   });
   

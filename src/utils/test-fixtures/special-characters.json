@@ -1,7 +1,8 @@
 {
   "states": [
     { "id": "draft", "label": "Draft" },
-    { "id": "in_review", "label": "In Review" }
+    { "id": "in_review", "label": "In Review" },
+    { "id": "approved", "label": "Approved ⭐" }
   ],
   "transitions": [
     {
@@ -9,6 +10,14 @@
       "label": "Submit for review: \"Ready!\"",
       "fromStates": ["draft"],
       "toState": "in_review",
+      "allowedRoles": [],
+      "isAccessible": false
+    },
+    {
+      "id": "approve",
+      "label": "Approve",
+      "fromStates": ["in_review"],
+      "toState": "approved",
       "allowedRoles": [],
       "isAccessible": false
     }
