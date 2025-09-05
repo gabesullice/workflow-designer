@@ -57,6 +57,8 @@ function WorkflowStates() {
 
   const handleExpandForm = () => {
     setIsFormExpanded(true);
+    // Clear any previous validation errors
+    setValidationError('');
     // Focus the input after the form expands
     setTimeout(() => {
       inputRef.current?.focus();
@@ -71,7 +73,13 @@ function WorkflowStates() {
         setItems={updateStates}
         renderItem={(state) => <StateItem state={state} />}
         itemClassName="state-item"
-        onDelete={(state) => removeState(state.id)}
+        onDelete={(state) => {
+          const success = removeState(state.id);
+          if (!success) {
+            // Error is already set in the hook, just ensure form is collapsed to show it
+            setIsFormExpanded(false);
+          }
+        }}
       />
       {!isFormExpanded ? (
         <button onClick={handleExpandForm} className="add-item-trigger">
@@ -94,6 +102,9 @@ function WorkflowStates() {
           <button type="button" onClick={() => setIsFormExpanded(false)} className="btn btn-secondary">Cancel</button>
           {validationError && <div className="validation-error">{validationError}</div>}
         </form>
+      )}
+      {!isFormExpanded && validationError && (
+        <div className="validation-error">{validationError}</div>
       )}
     </div>
   );

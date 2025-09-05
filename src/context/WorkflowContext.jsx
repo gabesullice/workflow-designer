@@ -35,6 +35,24 @@ export function WorkflowProvider({ children, initialWorkflow }) {
     setWorkflow({ ...workflow, transitions: newTransitions });
   };
 
+  const removeTransition = (transitionId) => {
+    // Filter out the transition
+    const updatedTransitions = workflow.transitions.filter(transition => transition.id !== transitionId);
+    
+    // Update roles to remove permissions for this transition
+    const updatedRoles = workflow.roles.map(role => ({
+      ...role,
+      permissions: role.permissions.filter(permission => permission !== transitionId)
+    }));
+    
+    // Update both transitions and roles atomically
+    setWorkflow({ 
+      ...workflow, 
+      transitions: updatedTransitions,
+      roles: updatedRoles 
+    });
+  };
+
   const updateRoles = (newRoles) => {
     const currentRoleIds = workflow.roles.map(role => role.id);
     const newRoleIds = newRoles.map(role => role.id);
@@ -134,6 +152,7 @@ export function WorkflowProvider({ children, initialWorkflow }) {
     hiddenStateIds,
     updateStates,
     updateTransitions,
+    removeTransition,
     updateRoles,
     updateSelectedRoleIds,
     updateHiddenStateIds,
