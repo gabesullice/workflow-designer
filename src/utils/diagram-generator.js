@@ -25,10 +25,11 @@ export function getWorkflowRoleColors(workflow) {
   return colors;
 }
 
-export function generateWorkflowDiagram(workflow) {
+export function generateWorkflowDiagram(workflow, hiddenStateIds = []) {
   console.assert(workflow && typeof workflow === 'object', 'Workflow must be an object');
   console.assert(Array.isArray(workflow.states), 'Workflow.states must be an array');
   console.assert(Array.isArray(workflow.transitions), 'Workflow.transitions must be an array');
+  console.assert(Array.isArray(hiddenStateIds), 'hiddenStateIds must be an array');
   
   // Create mapping from state ID to display label
   const stateIdToLabel = new Map();
@@ -86,6 +87,7 @@ export function generateWorkflowDiagram(workflow) {
       diagram += `    ${state.id}(${sanitizedLabel})\n`;
     }
   });
+  
   
   return diagram;
 }

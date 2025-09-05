@@ -7,15 +7,28 @@ const WorkflowContext = createContext();
 export function WorkflowProvider({ children, initialWorkflow }) {
   const [workflow, setWorkflowLocalStorage] = useLocalStorage('workflow', initialWorkflow);
   const [selectedRoleIds, setSelectedRoleIds] = useState(workflow.roles.map(role => role.id));
+  const [hiddenStateIds, setHiddenStateIds] = useState([]);
 
   const setWorkflow = (newWorkflow) => {
     setWorkflowLocalStorage(newWorkflow);
     setSelectedRoleIds(newWorkflow.roles.map(role => role.id));
+    setHiddenStateIds([]);
     removeWorkflowFromUrl();
   };
 
   const updateStates = (newStates) => {
-    setWorkflow({ ...workflow, states: newStates });
+    const currentStateIds = workflow.states.map(state => state.id);
+    const newStateIds = newStates.map(state => state.id);
+    
+    // Find states that were removed
+    const removedStateIds = currentStateIds.filter(id => !newStateIds.includes(id));
+    
+    // Remove any hidden states that no longer exist
+    const updatedHiddenStateIds = hiddenStateIds.filter(id => !removedStateIds.includes(id));
+    
+    setWorkflowLocalStorage({ ...workflow, states: newStates });
+    setHiddenStateIds(updatedHiddenStateIds);
+    removeWorkflowFromUrl();
   };
 
   const updateTransitions = (newTransitions) => {
@@ -45,6 +58,14 @@ export function WorkflowProvider({ children, initialWorkflow }) {
 
   const updateSelectedRoleIds = (roleIds) => {
     setSelectedRoleIds(roleIds);
+  };
+
+  const updateHiddenStateIds = (stateId, isHidden) => {
+    if (isHidden) {
+      setHiddenStateIds([...hiddenStateIds, stateId]);
+    } else {
+      setHiddenStateIds(hiddenStateIds.filter(id => id !== stateId));
+    }
   };
 
   const resetWorkflow = () => {
@@ -110,10 +131,12 @@ export function WorkflowProvider({ children, initialWorkflow }) {
   const value = {
     workflow,
     selectedRoleIds,
+    hiddenStateIds,
     updateStates,
     updateTransitions,
     updateRoles,
     updateSelectedRoleIds,
+    updateHiddenStateIds,
     resetWorkflow,
     loadSampleWorkflow
   };

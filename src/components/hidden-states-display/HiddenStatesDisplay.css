@@ -1,0 +1,41 @@
+/* Hidden States Display */
+.hidden-states-display {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.hidden-states-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  max-width: 600px;
+}
+
+.hidden-state-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+.hidden-state-item:hover {
+  color: var(--color-text-primary);
+}
+
+.hidden-state-label {
+  font-weight: 500;
+}
+
+.hidden-state-item svg {
+  width: 14px;
+  height: 14px;
+  transform: translateY(-.5px);
+}

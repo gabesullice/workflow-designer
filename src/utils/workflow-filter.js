@@ -52,3 +52,37 @@ export function getInaccessibleTransitions(workflow, selectedRoleIds = []) {
     });
   });
 }
+
+export function filterWorkflowByStates(workflow, hiddenStateIds = []) {
+  console.assert(workflow && typeof workflow === 'object', 'Workflow must be an object');
+  console.assert(Array.isArray(workflow.states), 'Workflow.states must be an array');
+  console.assert(Array.isArray(workflow.transitions), 'Workflow.transitions must be an array');
+  console.assert(Array.isArray(hiddenStateIds), 'hiddenStateIds must be an array');
+
+  // Filter out hidden states completely
+  const filteredStates = workflow.states.filter(state => 
+    !hiddenStateIds.includes(state.id)
+  );
+  
+  // Filter out transitions that involve hidden states
+  const filteredTransitions = workflow.transitions.filter(transition => {
+    // Check if toState is hidden
+    if (hiddenStateIds.includes(transition.toState)) {
+      return false;
+    }
+    
+    // Check if any fromState is hidden
+    const hasHiddenFromState = transition.fromStates.some(stateId => hiddenStateIds.includes(stateId));
+    if (hasHiddenFromState) {
+      return false;
+    }
+    
+    return true;
+  });
+
+  return {
+    ...workflow,
+    states: filteredStates,
+    transitions: filteredTransitions
+  };
+}

@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect } from 'vitest';
-import { filterWorkflowByRoles, getInaccessibleTransitions } from './workflow-filter.js';
+import { filterWorkflowByRoles, getInaccessibleTransitions, filterWorkflowByStates } from './workflow-filter.js';
 
 const mockWorkflow = {
   states: [
@@ -223,6 +223,91 @@ describe('getInaccessibleTransitions', () => {
     
     expect(result).toHaveLength(3);
     expect(result.map(t => t.id)).toEqual(['approve', 'send_back', 'publish']);
+  });
+});
+
+describe('filterWorkflowByStates', () => {
+  it('returns workflow unchanged when no states are hidden', () => {
+    const result = filterWorkflowByStates(mockWorkflow, []);
+    expect(result.states).toEqual(mockWorkflow.states);
+    expect(result.transitions).toEqual(mockWorkflow.transitions);
+    expect(result.roles).toEqual(mockWorkflow.roles);
+  });
+
+  it('filters out transitions involving hidden states', () => {
+    const result = filterWorkflowByStates(mockWorkflow, ['review']);
+    
+    // Hidden states should be filtered out completely
+    expect(result.states).toHaveLength(3); // 4 original - 1 hidden = 3
+    expect(result.states.map(s => s.id)).not.toContain('review');
+    expect(result.transitions).toHaveLength(1); // Only 1 transition should remain
+    
+    // When 'review' is hidden:
+    // submit_for_review goes TO review (filtered out)
+    // approve comes FROM review (filtered out)  
+    // send_back comes FROM review (filtered out)
+    // Only publish remains (approved->published)
+    const remainingTransitionIds = result.transitions.map(t => t.id);
+    expect(remainingTransitionIds).toEqual(['publish']);
+  });
+
+  it('filters out transitions with hidden fromState', () => {
+    const result = filterWorkflowByStates(mockWorkflow, ['approved']);
+    
+    // Hidden states should be filtered out completely
+    expect(result.states).toHaveLength(3); // 4 original - 1 hidden = 3
+    expect(result.states.map(s => s.id)).not.toContain('approved');
+    // Should filter out transitions where 'approved' is in fromStates or toState
+    const remainingTransitions = result.transitions.filter(t => 
+      !t.fromStates.includes('approved') && t.toState !== 'approved'
+    );
+    expect(result.transitions).toHaveLength(remainingTransitions.length);
+  });
+
+  it('filters out transitions with hidden toState', () => {
+    const result = filterWorkflowByStates(mockWorkflow, ['published']);
+    
+    // Hidden states should be filtered out completely
+    expect(result.states).toHaveLength(3); // 4 original - 1 hidden = 3
+    expect(result.states.map(s => s.id)).not.toContain('published');
+    // Should filter out the 'publish' transition that goes to 'published'
+    const publishTransition = result.transitions.find(t => t.id === 'publish');
+    expect(publishTransition).toBeUndefined();
+  });
+
+  it('handles multiple hidden states', () => {
+    const result = filterWorkflowByStates(mockWorkflow, ['review', 'approved']);
+    
+    // Hidden states should be filtered out completely
+    expect(result.states).toHaveLength(2); // 4 original - 2 hidden = 2
+    expect(result.states.map(s => s.id)).not.toContain('review');
+    expect(result.states.map(s => s.id)).not.toContain('approved');
+    // When both 'review' and 'approved' are hidden, all transitions are filtered out:
+    // submit_for_review goes TO review (filtered out)
+    // approve comes FROM review (filtered out)
+    // send_back comes FROM review AND approved (filtered out)  
+    // publish comes FROM approved (filtered out)
+    expect(result.transitions).toHaveLength(0); // No transitions should remain
+  });
+
+  it('handles non-existent hidden state IDs gracefully', () => {
+    const result = filterWorkflowByStates(mockWorkflow, ['non_existent_state']);
+    
+    expect(result.states).toEqual(mockWorkflow.states); // No states filtered
+    expect(result.transitions).toEqual(mockWorkflow.transitions); // No filtering should occur
+  });
+
+  it('preserves other workflow properties', () => {
+    const workflowWithExtra = {
+      ...mockWorkflow,
+      metadata: { version: '1.0' },
+      description: 'Test workflow'
+    };
+    
+    const result = filterWorkflowByStates(workflowWithExtra, ['review']);
+    
+    expect(result.metadata).toEqual({ version: '1.0' });
+    expect(result.description).toBe('Test workflow');
   });
 });
 

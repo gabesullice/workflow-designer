@@ -35,11 +35,52 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-1);
+  transition: opacity var(--transition-fast);
+}
+
+
+.state-item-content .state-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
 }
 
 .state-item-content strong {
   color: var(--color-text-primary);
   font-weight: 600;
+}
+
+.visibility-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--space-2);
+  transition: all var(--transition-fast);
+  color: var(--color-text-secondary);
+}
+
+.visibility-toggle:hover {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.visibility-toggle.hidden {
+  color: var(--color-danger);
+}
+
+.visibility-toggle.visible {
+  color: var(--color-success);
+}
+
+.visibility-toggle svg {
+  width: 16px;
+  height: 16px;
 }
 
 .add-state-form {

@@ -5,15 +5,17 @@ import RoleFilter from './components/role-filter/RoleFilter.jsx';
 import { DiagramVisualizer } from './components/diagram-visualizer/DiagramVisualizer.jsx';
 import ConfirmationModal from './components/shared/ConfirmationModal.jsx';
 import ShareButton from './components/ShareButton.jsx';
+import HiddenStatesDisplay from './components/hidden-states-display/HiddenStatesDisplay.jsx';
 import { generateWorkflowDiagram, getWorkflowRoleColors } from './utils/diagram-generator.js';
-import { filterWorkflowByRoles } from './utils/workflow-filter.js';
+import { filterWorkflowByRoles, filterWorkflowByStates } from './utils/workflow-filter.js';
 import { useWorkflowContext } from './context/WorkflowContext.jsx';
 import { getWorkflowFromUrl } from './utils/workflow-sharing.js';
 
 function DiagramVisualizerContainer() {
-  const { workflow, selectedRoleIds } = useWorkflowContext();
-  const filteredWorkflow = filterWorkflowByRoles(workflow, selectedRoleIds);
-  const diagramDefinition = generateWorkflowDiagram(filteredWorkflow);
+  const { workflow, selectedRoleIds, hiddenStateIds } = useWorkflowContext();
+  const roleFilteredWorkflow = filterWorkflowByRoles(workflow, selectedRoleIds);
+  const stateFilteredWorkflow = filterWorkflowByStates(roleFilteredWorkflow, hiddenStateIds);
+  const diagramDefinition = generateWorkflowDiagram(stateFilteredWorkflow, hiddenStateIds);
   const roleColors = getWorkflowRoleColors(workflow);
   
   return <DiagramVisualizer diagramDefinition={diagramDefinition} roleColors={roleColors} />;
@@ -123,6 +125,7 @@ function AppContent() {
               <>
                 <RoleFilter />
                 <DiagramVisualizerContainer />
+                <HiddenStatesDisplay />
               </>
             ) : (
               <LoadSampleWorkflowButton />
