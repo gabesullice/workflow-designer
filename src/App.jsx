@@ -10,6 +10,7 @@ import { generateWorkflowDiagram, getWorkflowRoleColors } from './utils/diagram-
 import { filterWorkflowByRoles, filterWorkflowByStates } from './utils/workflow-filter.js';
 import { useWorkflowContext } from './context/WorkflowContext.jsx';
 import { getWorkflowFromUrl } from './utils/workflow-sharing.js';
+import useLocalStorage from './hooks/useLocalStorage.js';
 
 function DiagramVisualizerContainer() {
   const { workflow, selectedRoleIds, hiddenStateIds } = useWorkflowContext();
@@ -164,10 +165,12 @@ function AppContent() {
 function App({ initialWorkflow }) {
   // Try to get workflow from URL if no initialWorkflow provided
   const emptyWorkflow = { states: [], transitions: [], roles: [] };
-  const workflowFromUrl = initialWorkflow || getWorkflowFromUrl() || emptyWorkflow;
+  const workflowFromURL = getWorkflowFromUrl();
+  const workflow = initialWorkflow || workflowFromURL || emptyWorkflow;
+  useLocalStorage('workflow', workflow, !!workflowFromURL);
 
   return (
-    <WorkflowProvider initialWorkflow={workflowFromUrl}>
+    <WorkflowProvider initialWorkflow={workflow}>
       <AppContent />
     </WorkflowProvider>
   );

@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import './WorkflowStates.css';
-import { useWorkflowStates } from '../../hooks/useWorkflowStates.js';
 import { useWorkflowContext } from '../../context/WorkflowContext.jsx';
 import DraggableItemList from '../shared/DraggableItemList.jsx';
 
@@ -40,18 +39,22 @@ function StateItem({ state }) {
   );
 }
 
-function WorkflowStates() {
-  const { states, addState, removeState, updateStates, validationError, setValidationError } = useWorkflowStates();
+function WorkflowStates({ 
+  onAddState, 
+  onRemoveState, 
+  validationError, 
+  setValidationError,
+  isFormExpanded,
+  setIsFormExpanded 
+}) {
+  const { workflow: { states }, updateStates } = useWorkflowContext();
   const [newStateLabel, setNewStateLabel] = useState('');
-  const [isFormExpanded, setIsFormExpanded] = useState(false);
   const inputRef = useRef(null);
-
 
   const handleAddState = (e) => {
     e.preventDefault();
-    if (addState(newStateLabel)) {
+    if (onAddState(newStateLabel)) {
       setNewStateLabel('');
-      setIsFormExpanded(false);
     }
   };
 
@@ -74,9 +77,8 @@ function WorkflowStates() {
         renderItem={(state) => <StateItem state={state} />}
         itemClassName="state-item"
         onDelete={(state) => {
-          const success = removeState(state.id);
+          const success = onRemoveState(state.id);
           if (!success) {
-            // Error is already set in the hook, just ensure form is collapsed to show it
             setIsFormExpanded(false);
           }
         }}

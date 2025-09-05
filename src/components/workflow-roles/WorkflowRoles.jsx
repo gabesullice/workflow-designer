@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import './WorkflowRoles.css';
 import DraggableItemList from '../shared/DraggableItemList.jsx';
-import { useWorkflowRoles } from '../../hooks/useWorkflowRoles.js';
+import { useWorkflowContext } from '../../context/WorkflowContext.jsx';
 
 function RoleItem({ role, availableTransitions, onTogglePermission }) {
   return (
@@ -30,29 +30,25 @@ function RoleItem({ role, availableTransitions, onTogglePermission }) {
   );
 }
 
-function WorkflowRoles() {
-  const {
-    roles,
-    transitions: availableTransitions,
-    addRole,
-    removeRole,
-    togglePermission,
-    updateRoles,
-    validationError,
-    setValidationError
-  } = useWorkflowRoles();
+function WorkflowRoles({ 
+  onAddRole, 
+  onRemoveRole, 
+  onTogglePermission, 
+  validationError, 
+  isFormExpanded,
+  setIsFormExpanded 
+}) {
+  const { workflow: { roles, transitions: availableTransitions }, updateRoles } = useWorkflowContext();
   
   const [newRoleLabel, setNewRoleLabel] = useState('');
-  const [isFormExpanded, setIsFormExpanded] = useState(false);
   const inputRef = useRef(null);
 
 
   const handleAddRole = (e) => {
     e.preventDefault();
-    const success = addRole(newRoleLabel);
+    const success = onAddRole(newRoleLabel);
     if (success) {
       setNewRoleLabel('');
-      setIsFormExpanded(false);
     }
   };
 
@@ -62,9 +58,6 @@ function WorkflowRoles() {
       inputRef.current?.focus();
     }, 0);
   };
-
-
-
 
   return (
     <div className="workflow-roles">
@@ -76,11 +69,11 @@ function WorkflowRoles() {
           <RoleItem 
             role={role} 
             availableTransitions={availableTransitions}
-            onTogglePermission={togglePermission}
+            onTogglePermission={onTogglePermission}
           />
         )}
         itemClassName="role-item"
-        onDelete={(role) => removeRole(role.id)}
+        onDelete={(role) => onRemoveRole(role.id)}
       />
       {!isFormExpanded ? (
         <button onClick={handleExpandForm} className="add-item-trigger">

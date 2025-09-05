@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage.js';
 import { removeWorkflowFromUrl } from '../utils/workflow-sharing.js';
+import { validateMachineName, generateMachineNameFromLabel } from '../utils/machine-name.js';
 
 const WorkflowContext = createContext();
 
@@ -91,6 +92,157 @@ export function WorkflowProvider({ children, initialWorkflow }) {
     setWorkflow(emptyWorkflow);
   };
 
+  const addState = (label) => {
+    if (!label.trim()) {
+      return { success: false, error: 'State label is required' };
+    }
+    
+    const id = generateMachineNameFromLabel(label);
+    
+    if (!validateMachineName(id)) {
+      return { success: false, error: 'ID must contain only lowercase letters and underscores' };
+    }
+    
+    if (workflow.states.some(state => state.id === id)) {
+      return { success: false, error: 'ID must be unique' };
+    }
+    
+    const newState = { id, label: label.trim() };
+    const updatedWorkflow = {
+      ...workflow,
+      states: [...workflow.states, newState]
+    };
+    setWorkflowLocalStorage(updatedWorkflow);
+    removeWorkflowFromUrl();
+    return { success: true };
+  };
+
+  const removeState = (stateId) => {
+    // Find transitions that reference this state
+    const referencingTransitions = workflow.transitions.filter(transition => 
+      transition.fromStates.includes(stateId) || transition.toState === stateId
+    );
+    
+    // Remove the state and all referencing transitions
+    const updatedStates = workflow.states.filter(state => state.id !== stateId);
+    const updatedTransitions = workflow.transitions.filter(transition => 
+      !transition.fromStates.includes(stateId) && transition.toState !== stateId
+    );
+    
+    // Remove role permissions for deleted transitions
+    const deletedTransitionIds = referencingTransitions.map(t => t.id);
+    const updatedRoles = workflow.roles.map(role => ({
+      ...role,
+      permissions: role.permissions.filter(permission => 
+        !deletedTransitionIds.includes(permission)
+      )
+    }));
+    
+    const updatedHiddenStateIds = hiddenStateIds.filter(id => id !== stateId);
+    
+    setWorkflowLocalStorage({ 
+      ...workflow, 
+      states: updatedStates,
+      transitions: updatedTransitions,
+      roles: updatedRoles
+    });
+    setHiddenStateIds(updatedHiddenStateIds);
+    removeWorkflowFromUrl();
+    return { success: true };
+  };
+
+  const addTransition = (label, fromStates, toState) => {
+    if (!label.trim()) {
+      return { success: false, error: 'Transition label is required' };
+    }
+    
+    if (fromStates.length === 0) {
+      return { success: false, error: 'At least one "from" state must be selected' };
+    }
+    
+    if (!toState) {
+      return { success: false, error: 'A "to" state must be selected' };
+    }
+    
+    const id = generateMachineNameFromLabel(label);
+    
+    if (!validateMachineName(id)) {
+      return { success: false, error: 'ID must contain only lowercase letters and underscores' };
+    }
+    
+    if (workflow.transitions.some(transition => transition.id === id)) {
+      return { success: false, error: 'ID must be unique' };
+    }
+    
+    const newTransition = {
+      id,
+      label: label.trim(),
+      fromStates: [...fromStates],
+      toState
+    };
+    
+    const updatedWorkflow = {
+      ...workflow,
+      transitions: [...workflow.transitions, newTransition]
+    };
+    setWorkflowLocalStorage(updatedWorkflow);
+    removeWorkflowFromUrl();
+    return { success: true };
+  };
+
+  const addRole = (label) => {
+    if (!label.trim()) {
+      return { success: false, error: 'Role label is required' };
+    }
+    
+    const id = generateMachineNameFromLabel(label);
+    
+    if (!validateMachineName(id)) {
+      return { success: false, error: 'ID must contain only lowercase letters and underscores' };
+    }
+    
+    if (workflow.roles.some(role => role.id === id)) {
+      return { success: false, error: 'ID must be unique' };
+    }
+    
+    const newRole = { id, label: label.trim(), permissions: [] };
+    const updatedWorkflow = {
+      ...workflow,
+      roles: [...workflow.roles, newRole]
+    };
+    setWorkflowLocalStorage(updatedWorkflow);
+    setSelectedRoleIds([...selectedRoleIds, id]);
+    removeWorkflowFromUrl();
+    return { success: true };
+  };
+
+  const removeRole = (roleId) => {
+    const updatedRoles = workflow.roles.filter(role => role.id !== roleId);
+    const updatedSelectedRoleIds = selectedRoleIds.filter(id => id !== roleId);
+    
+    setWorkflowLocalStorage({ ...workflow, roles: updatedRoles });
+    setSelectedRoleIds(updatedSelectedRoleIds);
+    removeWorkflowFromUrl();
+    return { success: true };
+  };
+
+  const togglePermission = (roleId, transitionId) => {
+    const updatedRoles = workflow.roles.map(role => {
+      if (role.id === roleId) {
+        const hasPermission = role.permissions.includes(transitionId);
+        const newPermissions = hasPermission
+          ? role.permissions.filter(id => id !== transitionId)
+          : [...role.permissions, transitionId];
+        return { ...role, permissions: newPermissions };
+      }
+      return role;
+    });
+    
+    setWorkflowLocalStorage({ ...workflow, roles: updatedRoles });
+    removeWorkflowFromUrl();
+    return { success: true };
+  };
+
   const loadSampleWorkflow = () => {
     const sampleWorkflow = {
       states: [
@@ -157,7 +309,13 @@ export function WorkflowProvider({ children, initialWorkflow }) {
     updateSelectedRoleIds,
     updateHiddenStateIds,
     resetWorkflow,
-    loadSampleWorkflow
+    loadSampleWorkflow,
+    addState,
+    removeState,
+    addTransition,
+    addRole,
+    removeRole,
+    togglePermission
   };
 
   return (
